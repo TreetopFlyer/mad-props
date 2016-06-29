@@ -17,17 +17,13 @@ neo4j.query = function(inQuery, inParams){
         .headers(neo4j.headers)
         .send({"query":inQuery, "params":inParams})
         .end(function(inResponse){
-
-            if(inResponse.body.data && inResponse.body.data.length > 0){
+            if(inResponse.body.data){
                 inResolve(inResponse.body.data);
-                return;
+            }else{
+                inReject(inResponse.body);
             }
-            
-            inReject(inResponse.body);
-
         });
     });
 };
-
 
 module.exports = neo4j;
