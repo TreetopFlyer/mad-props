@@ -1,6 +1,12 @@
 <form>
-    <textbox>
+    <select>
+        <option selected>Select a co-worker</option>
+        {{#each users}}
+            <option value="{{this.identity}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+    <textarea>
 
-    </textbox>
+    </textarea>
     <input type="submit"/>
 </form>

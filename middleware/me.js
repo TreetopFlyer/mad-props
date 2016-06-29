@@ -14,9 +14,29 @@ router.get('/me', function(inReq, inRes){
         userIdentity: inReq.Auth.ID
     })
     .then(function(inData){
-        inRes.send(inData);
+        inRes.send(inData[0][0].data);
     }, function(inError){
         inRes.send(inError);
+    });
+});
+
+router.get('/me/story', function(inReq, inRes){
+    neo4j
+    .query("MATCH (u:User) where u.identity <> {userIdentity} return u", {
+        userIdentity: inReq.Auth.ID
+    })
+    .then(function(inData){
+        var model;
+        var i;
+        model = {
+            users:[]
+        };
+        for(i=0; i<inData.length; i++){
+            model.users.push(inData[i][0].data);
+        }
+        inRes.render("story", model);
+    }, function(inFailure){
+        inRes.send(inFailure);
     });
 });
 
@@ -34,11 +54,12 @@ router.post('/me/story', function(inReq, inRes){
 });
 
 router.post('/me/vote', function(inReq, inRes){
-    neo4j.query("match (u:User {identity:{userIdentity}}), (s:Story) where id(s) = toInt({storyID}) create (u)-[v:vote]->(s) return u", {
+    neo4j.query("match (user:User {identity:{userIdentity}}), (author:User)-[:wrote]->(story:Story) where id(story) = toInt({storyID}) and author.identity <> {userIdentity} create (user)-[:vote]->(story) return story", {
         userIdentity : inReq.Auth.ID,
         storyID : inReq.body.storyID
     })
     .then(function(inData){
+        console.log(inData);
         inRes.send(inData);
     }, function(inError){
         inRes.send(inError);

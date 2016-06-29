@@ -14,5 +14,6 @@ server.use('/', require('./middleware/auth'));
 server.use('/', require('./middleware/login'));
 server.use('/', require('./middleware/users'));
 server.use('/', require('./middleware/me'));
+server.use('/', require('./middleware/stories'));
 
 module.exports = server;
