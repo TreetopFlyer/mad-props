@@ -22,7 +22,7 @@ router.get('/me', function(inReq, inRes){
 
 router.get('/me/story', function(inReq, inRes){
     neo4j
-    .query("MATCH (u:User) where u.identity <> {userIdentity} return u", {
+    .query("MATCH (u:User {identity:{userIdentity}})--(s:Story) return s", {
         userIdentity: inReq.Auth.ID
     })
     .then(function(inData){

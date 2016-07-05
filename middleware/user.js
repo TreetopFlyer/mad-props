@@ -9,10 +9,11 @@ router.post('/user', function(inReq, inRes){
     })
     .then(function(inData){
         if(inData.length == 0){
-            return neo4j.query("CREATE (u:User {name:{userName}, title:{userTitle}, identity:{userIdentity}}) return u", {
+            return neo4j.query("CREATE (u:User {name:{userName}, title:{userTitle}, identity:{userIdentity}, rank:{userRank}}) return u", {
                 userName : inReq.body.userName,
                 userTitle : inReq.body.userTitle,
-                userIdentity : inReq.body.userIdentity
+                userIdentity : inReq.body.userIdentity,
+                userRank : inReq.body.userRank
             });
         }else{
             return Promise.resolve(inData);
@@ -38,7 +39,7 @@ router.get('/user/all', function(inReq, inRes){
         for(i=0; i<inData.length; i++){
             model.users.push({data:inData[i][0].data, meta:inData[i][0].metadata});
         }
-        inRes.render("users", model);
+        inRes.send(model);
     }, function(inFailure){
         inRes.send(inFailure);
     });

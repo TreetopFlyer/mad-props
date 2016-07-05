@@ -1,15 +1,18 @@
 var unirest = require('unirest');
 
 var neo4j = {};
+
 neo4j.config = {
     username:process.env.DB_USERNAME,
     password:process.env.DB_PASSWORD,
     endpoint:process.env.DB_URL
 };
+
 neo4j.headers = {
     'Authorization': 'Basic ' + new Buffer(neo4j.config.username+':'+neo4j.config.password).toString('base64'),
     'Content-Type': 'application/json'
-}
+};
+
 neo4j.query = function(inQuery, inParams){
     return new Promise(function(inResolve, inReject){
         unirest
@@ -23,6 +26,15 @@ neo4j.query = function(inQuery, inParams){
                 inReject(inResponse.body);
             }
         });
+    });
+};
+
+neo4j.purge = function(){
+    return neo4j.query('match (n) detach delete n')
+    .then(function(inSuccess){
+        return Promise.resolve(inSuccess);
+    }, function(inFailure){
+        return Promise.reject(inFailure);
     });
 };
 

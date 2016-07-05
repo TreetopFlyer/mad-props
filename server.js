@@ -12,8 +12,9 @@ server.use('/static', express.static(__dirname+'/static'));
 server.use('/', bodyParser.json());
 server.use('/', require('./middleware/auth'));
 server.use('/', require('./middleware/login'));
-server.use('/', require('./middleware/users'));
+server.use('/', require('./middleware/user'));
 server.use('/', require('./middleware/me'));
 server.use('/', require('./middleware/stories'));
+server.use('/', require('./middleware/admin'));
 
 module.exports = server;
