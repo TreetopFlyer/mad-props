@@ -1,13 +1,13 @@
 var router = require('express').Router();
 var Auth = require('../classes/Auth');
-var neo4j = require('../db/neo4j');
+var User = require('../db/user');
 
-router.get('/hack/:identity', function(inReq, inRes){
+router.get('/auth/hack/:identity', function(inReq, inRes){
     var fixed = unescape(inReq.params.identity);
-    inRes.redirect("/login/?identity="+fixed+"&signature="+Auth.Sign(fixed));
+    inRes.redirect("/auth/login/?identity="+fixed+"&signature="+Auth.Sign(fixed));
 });
 
-router.get('/login', function(inReq, inRes){
+router.get('/auth/login', function(inReq, inRes){
 
     var fixed;
 
@@ -28,8 +28,8 @@ router.get('/login', function(inReq, inRes){
         return;
     }
 
-    neo4j
-    .query("match (u:User {identity:{userIdentity}}) return u", {userIdentity:fixed})
+    User
+    .locate({id:fixed})
     .then(function(inData){
         if(inData.length == 0){
             inRes.send("account not on record");
@@ -37,13 +37,12 @@ router.get('/login', function(inReq, inRes){
             inReq.Auth.LogIn(fixed, inReq.query.signature);
             inRes.redirect('/you');
         }
-        return Promise.resolve({});
     }, function(inError){
         inRes.send(inError);
     });
 });
 
-router.get('/logout', function(inReq, inRes){
+router.get('/auth/logout', function(inReq, inRes){
     if(inReq.Auth.LoggedIn){
         inReq.Auth.LogOut();
     }

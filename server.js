@@ -11,8 +11,9 @@ server.set("view engine", "handlebars");
 server.use('/static', express.static(__dirname+'/static'));
 server.use('/', bodyParser.json());
 server.use('/', require('./middleware/auth'));
-server.use('/', require('./middleware/login'));
-server.use('/', require('./middleware/user'));
-server.use('/', require('./middleware/admin'));
+server.use('/', require('./routes/auth'));
+server.use('/', require('./routes/admin'));
+server.use('/', require('./routes/user'));
+server.use('/', require('./routes/seed'));
 
 module.exports = server;
