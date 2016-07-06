@@ -12,21 +12,21 @@ process.env.DB_USERNAME = "neo4j";
 process.env.DB_PASSWORD = "admin";
 process.env.DB_URL = "http://localhost:7474/db/data/cypher";
 
-var testId;
+var testId = uuid.v1();
 var testName = "summer employee of the month"
 var testStatus = false;
 
 describe("Contest CRUD", function(){
 
-    it("should create a contest given an id", function(done){
+    it("should create a contest", function(done){
         Contest
-        .create({name:testName, open:testStatus, id:uuid.v1()})
+        .create({name:testName, open:testStatus, id:testId})
         .then(function(inSuccess){
 
             should.exist(inSuccess);
             
             inSuccess.should.have.property('id');
-            testId = inSuccess.id;
+            inSuccess.id.should.equal(testId);
 
             inSuccess.should.have.property('name');
             inSuccess.name.should.equal(testName);
@@ -43,10 +43,9 @@ describe("Contest CRUD", function(){
         });
     });
 
-
-    it("should find a contest given the id of the contest that was created", function(done){
+    it("should locate the created contest given its id", function(done){
         Contest
-        .find({id:testId})
+        .locate({id:testId})
         .then(function(inSuccess){
             should.exist(inSuccess);
 
@@ -67,9 +66,9 @@ describe("Contest CRUD", function(){
             done(inError);
         });
     });
-    it("should fail to find a contest given a bogus id", function(done){
+    it("should fail to locate a contest given a bogus id", function(done){
         Contest
-        .find({id:"gibberish"})
+        .locate({id:"gibberish"})
         .then(function(inSuccess){
             should.not.exist(inSuccess);
             done();
@@ -81,8 +80,7 @@ describe("Contest CRUD", function(){
         });
     });
 
-
-    it("should update a contest given an id", function(done){
+    it("should update a contest", function(done){
         Contest
         .update({id:testId, fields:{name:"modified title", open:true}})
         .then(function(inSuccess){
@@ -119,8 +117,6 @@ describe("Contest CRUD", function(){
         });
     });
 
-
-
     it("should delete a contest given an id", function(done){
         Contest
         .delete({id:testId})
@@ -140,7 +136,7 @@ describe("Contest CRUD", function(){
     });
     it("should fail to delete a contest given a bogus id", function(done){
         Contest
-        .delete({id:123456789})
+        .delete({id:"gibberish"})
         .then(function(inSuccess){
             should.not.exist(inSuccess);
             done();

@@ -33,9 +33,8 @@ describe("Admin REST API", function(){
             done();
         }, function(inFailure){
             throw inFailure;
-        });
+        }).catch(inError);
     });
-
 
     it("should be able to add a test user", function(done){
         chai
@@ -64,8 +63,4 @@ describe("Admin REST API", function(){
 
     it("should be able to create a contest", function(done){
     });
-
-
-
-
 });

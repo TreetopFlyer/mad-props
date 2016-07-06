@@ -29,6 +29,8 @@ neo4j.query = function(inQuery, inParams){
     });
 };
 
+
+
 neo4j.purge = function(){
     return neo4j.query('match (n) detach delete n')
     .then(function(inSuccess){
