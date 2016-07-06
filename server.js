@@ -13,8 +13,6 @@ server.use('/', bodyParser.json());
 server.use('/', require('./middleware/auth'));
 server.use('/', require('./middleware/login'));
 server.use('/', require('./middleware/user'));
-server.use('/', require('./middleware/me'));
-server.use('/', require('./middleware/stories'));
 server.use('/', require('./middleware/admin'));
 
 module.exports = server;

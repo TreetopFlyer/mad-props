@@ -1,7 +1,5 @@
 var database = require('./neo4j');
-var Crud = require('../classes/crud');
-
-module.exports = new Crud(database, {
+module.exports = new database.Crud({
     create:"create (u:User {id:{id}, name:{name}, title:{title}, rank:{rank}}) return u",
     locate:"match (u:User {id:{id}}) return u",
     update:"match (u:User {id:{id}}) set u += {fields} return u",

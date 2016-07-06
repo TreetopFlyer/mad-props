@@ -1,12 +1,10 @@
 require('dotenv').config();
 
 var chai = require('chai');
-var chaiHTTP = require('chai-http');
 var Contest = require('../db/contest');
 var uuid = require('uuid');
 
 var should = chai.should();
-chai.use(chaiHTTP);
 
 process.env.DB_USERNAME = "neo4j";
 process.env.DB_PASSWORD = "admin";

@@ -7,9 +7,8 @@ router.use('/admin', function(inReq, inRes, inNext){
         inRes.json({exception:'you are not authorized to do this'});
         return;
     }
-
     User
-    .find({identity:inReq.Auth.ID})
+    .locate({id:inReq.Auth.ID})
     .then(function(inSuccess){
         if(inSuccess.rank == "admin"){
             inNext();
@@ -18,18 +17,21 @@ router.use('/admin', function(inReq, inRes, inNext){
         }
     }, function(inFailure){
         inRes.json({exception:'you are not authorized to do this'});
+    }).catch(function(inError){
+        inRes.json({exception:'error accessing profile'});
     });
 
 });
 
 router.post('/admin/user', function(inReq, inRes){
 
-    User.find({identity:inReq.body.identity})
+    User
+    .locate({identity:inReq.body.identity})
     .then(function(inSuccess){
         inRes.json({exception:"user already exists"});
     }, function(inFailure){
         return User.create({
-            identity:inReq.body.identity,
+            id:inReq.body.id,
             name: inReq.body.name,
             title: inReq.body.title,
             rank:inReq.body.rank
@@ -37,8 +39,8 @@ router.post('/admin/user', function(inReq, inRes){
     })
     .then(function(inSuccess){
         inRes.json(inSuccess);
-    }, function(inError){
-        inRes.json({exception:"error creating user"});
+    }).catch(function(inError){
+        inRes.json(inError);
     });
 
 });
