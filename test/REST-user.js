@@ -36,6 +36,8 @@ var testContest = {
     name:"employee of the month",
     open:true
 };
+var testStory = "What a swell guy.";
+var idStory;
 
 var express;
 
@@ -67,11 +69,55 @@ describe("User REST", function(){
         done();
     })
 
-    describe("create stories", function(){
+    describe("create a story about another user", function(){
 
         it("should create a story on POST to user/story and return the story", function(done){
+            chai.request(server)
+            .post('/user/story')
+            .set("authorization", testAuthorization)
+            .send({
+                idAuthor:testProfileAuthor.id,
+                idAbout:testProfileAbout.id,
+                idContest:testContest.id,
+                story:testStory
+            })
+            .end(function(inError, inResponse){
+                should.not.exist(inError);
+                should.exist(inResponse);
 
-            done();
+                inResponse.body.should.have.property("id");
+                idStory = inResponse.body.id;
+
+                inResponse.body.should.have.property("story");
+                inResponse.body.story.should.equal(testStory);
+
+                done();
+            });
+        });
+
+    });
+
+    describe("vote on a story", function(){
+
+        it("should vote a story on PATCH to user/story and return the story", function(done){
+            chai.request(server)
+            .patch('/user/story')
+            .set("authorization", testAuthorization)
+            .send({
+                idStory:idStory
+            })
+            .end(function(inError, inResponse){
+                should.not.exist(inError);
+                should.exist(inResponse);
+
+                inResponse.body.should.have.property("id");
+                idStory = inResponse.body.id;
+
+                inResponse.body.should.have.property("story");
+                inResponse.body.story.should.equal(testStory);
+
+                done();
+            });
         });
 
     });
