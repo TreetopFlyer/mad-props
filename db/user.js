@@ -3,20 +3,16 @@ var database = require('./neo4j');
 var User = {};
 
 User.find = function(inParams){
-    return database.query("match (u:User {identity:{identity}}) return u", inParams)
+    return database.query("match (u:User {id:{id}}) return u", inParams)
     .then(function(inSuccess){
-        if(inSuccess.length == 1){
             return Promise.resolve(inSuccess[0][0].data);
-        }else{
-           return Promise.reject({exception:'user not found'});
-        }
     }, function(inFailure){
         Promise.reject(inFailure);
     });
 };
 
 User.create = function(inParams){
-    return database.query("create (u:User {identity:{identity}, name:{name}, title:{title}, rank:{rank}}) return u", inParams)
+    return database.query("create (u:User {id:{id}, name:{name}, title:{title}, rank:{rank}}) return u", inParams)
     .then(function(inSuccess){
         return Promise.resolve(inSuccess[0][0].data);
     }, function(inFailure){
@@ -25,7 +21,7 @@ User.create = function(inParams){
 };
 
 User.update = function(inParams){
-    return database.query("match (u:User {identity:{identity}}) set u += {fields} return u", inParams)
+    return database.query("match (u:User {id:{id}}) set u += {fields} return u", inParams)
     .then(function(inSuccess){
         return Promise.resolve(inSuccess[0][0].data);
     }, function(inFailure){
@@ -34,9 +30,9 @@ User.update = function(inParams){
 };
 
 User.delete = function(inParams){
-    return database.query("match (u:User {identity:{identity}}) detach delete u return {id:id(u)} as User", inParams)
+    return database.query("match (u:User {id:{id}}) detach delete u return {id:{id}} as User", inParams)
     .then(function(inSuccess){
-        return Promise.resolve(inSuccess);
+        return Promise.resolve(inSuccess[0][0]);
     }, function(inFailure){
         return Promise.reject(inFailure);
     });

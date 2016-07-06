@@ -3,7 +3,7 @@ require('dotenv').config();
 var chai = require('chai');
 var chaiHTTP = require('chai-http');
 var Contest = require('../db/contest');
-
+var uuid = require('uuid');
 
 var should = chai.should();
 chai.use(chaiHTTP);
@@ -18,9 +18,9 @@ var testStatus = false;
 
 describe("Contest CRUD", function(){
 
-    it("should create a contest on create", function(done){
+    it("should create a contest given an id", function(done){
         Contest
-        .create({name:testName, open:testStatus})
+        .create({name:testName, open:testStatus, id:uuid.v1()})
         .then(function(inSuccess){
 
             should.exist(inSuccess);
@@ -43,7 +43,31 @@ describe("Contest CRUD", function(){
         });
     });
 
-    it("should fail to find a contest that doesn't exist", function(done){
+
+    it("should find a contest given the id of the contest that was created", function(done){
+        Contest
+        .find({id:testId})
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+
+            inSuccess.should.have.property('id');
+            inSuccess.id.should.equal(testId);
+
+            inSuccess.should.have.property('name');
+            inSuccess.name.should.equal(testName);
+
+            inSuccess.should.have.property('open');
+            inSuccess.open.should.be.a('boolean');
+
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+    it("should fail to find a contest given a bogus id", function(done){
         Contest
         .find({id:"gibberish"})
         .then(function(inSuccess){
@@ -57,25 +81,8 @@ describe("Contest CRUD", function(){
         });
     });
 
-    it("should find a contest with id of the contest that was created", function(done){
-        Contest
-        .find({id:testId})
-        .then(function(inSuccess){
-            should.exist(inSuccess);
-            inSuccess.should.have.property('id');
-            inSuccess.id.should.equal(testId);
-            inSuccess.should.have.property('name');
-            inSuccess.name.should.equal(testName);
-            done();
-        }, function(inFailure){
-            should.not.exist(inFailure);
-            done();
-        }).catch(function(inError){
-            done(inError);
-        });
-    });
 
-    it("should update a contest on update", function(done){
+    it("should update a contest given an id", function(done){
         Contest
         .update({id:testId, fields:{name:"modified title", open:true}})
         .then(function(inSuccess){
@@ -98,25 +105,9 @@ describe("Contest CRUD", function(){
             done(inError);
         });
     });
-
-    it("should delete a contest on delete", function(done){
+    it("should fail to update a contest given a bogus id", function(done){
         Contest
-        .delete({id:testId})
-        .then(function(inSuccess){
-            should.exist(inSuccess);
-            done();
-        }, function(inFailure){
-            should.not.exist(inFailure);
-            done();
-        }).catch(function(inError){
-            done(inError);
-        });
-    });
-
-
-    it("should fail to delete a contest that doesnt exist", function(done){
-        Contest
-        .delete({id:123456789})
+        .update({id:"gibberish", fields:{name:"modified title", open:true}})
         .then(function(inSuccess){
             should.not.exist(inSuccess);
             done();
@@ -129,5 +120,36 @@ describe("Contest CRUD", function(){
     });
 
 
+
+    it("should delete a contest given an id", function(done){
+        Contest
+        .delete({id:testId})
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+
+            inSuccess.should.have.property('id');
+            inSuccess.id.should.equal(testId);
+
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+    it("should fail to delete a contest given a bogus id", function(done){
+        Contest
+        .delete({id:123456789})
+        .then(function(inSuccess){
+            should.not.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
 
 });
