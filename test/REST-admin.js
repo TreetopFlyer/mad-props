@@ -5,6 +5,7 @@ var chaiHTTP = require('chai-http');
 var server = require('../server.js');
 var db = require('../db/neo4j');
 var User = require('../db/user');
+var Story = require('../db/story');
 var Auth = require('../classes/Auth');
 
 var uuid = require('uuid');
@@ -37,6 +38,7 @@ var testContest = {
 
 var idUser;
 var idContest;
+var idStory = uuid.v1()
 var express;
 
 describe("Admin REST", function(){
@@ -121,8 +123,7 @@ describe("Admin REST", function(){
             .delete('/admin/user')
             .set("authorization", testAuthorization)
             .send({
-                id:idUser,
-                name:"modified user name"
+                id:idUser
             })
             .end(function(inError, inResponse){
                 
@@ -160,10 +161,71 @@ describe("Admin REST", function(){
                 done();
             });
         });
+        
+        it("should award a story on POST to admin/contest/award and return the story", function(done){
+
+            chai.request(server)
+            .post('/admin/user')
+            .set('authorization', testAuthorization)
+            .send(testProfileUser)
+            .then(function(inSuccess){
+                return Story.create({
+                    id:idStory,
+                    story:"what a swell guy",
+                    idAuthor:inSuccess.body.id,
+                    idAbout:"1",
+                    idContest:idContest
+                });
+            })
+            .then(function(inSuccess){
+                return chai.request(server)
+                .post('/admin/contest/award')
+                .set('authorization', testAuthorization)
+                .send({
+                    id:idContest,
+                    idStory:idStory
+                });
+            })
+            .then(function(inSuccess){
+                should.exist(inSuccess.body);
+
+                inSuccess.body.should.have.property("id");
+                inSuccess.body.id.should.equal(idStory);
+
+                done();
+            }, function(inFailure){
+                should.not.exist(inFailure);
+                done();
+            })
+            .catch(function(inError){
+                done(inError);
+            })
+        });
+
+        it("should revoke and awarded a story on DELETE to admin/contest/award and return the story", function(done){
+            chai.request(server)
+            .delete('/admin/contest/award')
+            .set('authorization', testAuthorization)
+            .send({
+                id:idContest,
+                idStory:idStory
+            })
+            .end(function(inError, inResponse){
+                
+                should.not.exist(inError);
+                should.exist(inResponse.body);
+
+                inResponse.body.should.have.property("id");
+                inResponse.body.id.should.equal(idStory);
+
+                done();
+            });
+        });
+
         it("should modify a contest on PUT to admin/contest and return the contest", function(done){
             chai.request(server)
             .put('/admin/contest')
-            .set("authorization", testAuthorization)
+            .set('authorization', testAuthorization)
             .send({
                 id:idContest,
                 name:"modified contest",

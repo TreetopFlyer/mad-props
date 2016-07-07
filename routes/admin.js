@@ -126,7 +126,7 @@ router.delete('/admin/contest', function(inReq, inRes){
     });
 });
 
-router.post('/admin/award', function(inReq, inRes){
+router.post('/admin/contest/award', function(inReq, inRes){
     db.query("match (c:Contest {id:{id}}) optional match (s:Story {id:{idStory}}) merge (c)-[:award]-(s) return s", {
         id:inReq.body.id,
         idStory:inReq.body.idStory
@@ -141,7 +141,7 @@ router.post('/admin/award', function(inReq, inRes){
     });
 });
 
-router.delete('/admin/award', function(inReq, inRes){
+router.delete('/admin/contest/award', function(inReq, inRes){
     db.query("match (c:Contest {id:{id}})-[a:award]->(s:Story {id:{idStory}}) delete a return s", {
         id:inReq.body.id,
         idStory:inReq.body.idStory
