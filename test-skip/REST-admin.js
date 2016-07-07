@@ -38,7 +38,8 @@ var testContest = {
 
 var idUser;
 var idContest;
-var idStory = uuid.v1()
+var idStory = uuid.v1();
+
 var express;
 
 describe("Admin REST", function(){

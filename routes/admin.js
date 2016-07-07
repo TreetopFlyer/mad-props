@@ -7,7 +7,7 @@ var uuid = require('uuid');
 
 router.use('/admin', function(inReq, inRes, inNext){
     if(!inReq.Auth.LoggedIn){
-        inRes.status(200).json({exception:'you are not authorized to do this'});
+        inRes.status(500).json({exception:'you are not authorized to do this'});
         return;
     }
 
@@ -17,12 +17,10 @@ router.use('/admin', function(inReq, inRes, inNext){
         if(inSuccess.rank == "admin"){
             inNext();
         }else{
-            inRes.status(200).json({exception:'you are not admin rank'});
+            inRes.status(500).json({exception:'you are not admin rank'});
         }
     }, function(inFailure){
         inRes.status(500).json({exception:'you are not authorized to do this'});
-    }).catch(function(inError){
-        inRes.status(500).json({exception:'error accessing profile'});
     });
 });
 
@@ -38,9 +36,6 @@ router.post('/admin/user', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 router.put('/admin/user', function(inReq, inRes){
@@ -57,9 +52,6 @@ router.put('/admin/user', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 router.delete('/admin/user', function(inReq, inRes){
@@ -71,9 +63,6 @@ router.delete('/admin/user', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 
@@ -88,9 +77,6 @@ router.post('/admin/contest', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 router.put('/admin/contest', function(inReq, inRes){
@@ -106,9 +92,6 @@ router.put('/admin/contest', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 router.delete('/admin/contest', function(inReq, inRes){
@@ -120,9 +103,6 @@ router.delete('/admin/contest', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 
@@ -135,9 +115,6 @@ router.post('/admin/contest/award', function(inReq, inRes){
         inRes.status(200).json(inSuccess[0][0].data);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 
@@ -150,9 +127,6 @@ router.delete('/admin/contest/award', function(inReq, inRes){
         inRes.status(200).json(inSuccess[0][0].data);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
     });
 });
 
