@@ -23,25 +23,40 @@ router.post('/user/story', function(inReq, inRes){
         story:inReq.body.story
     })
     .then(function(inSuccess){
-        inRes.json(inSuccess);
+        inRes.status(200).json(inSuccess);
     }, function(inFailure){
-        inRes.json(inFailure);
+        inRes.status(500).json(inFailure);
     })
 });
 
-router.patch('/user/story', function(inReq, inRes){
-    /*
-        is the story part of a valid contest?
-        have you already voted during this contest?
-    */
-    db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}}) create (u)-[:vote]->(s) return s", {
+
+router.post('/user/vote', function(inReq, inRes){
+    db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}})-[:enter]->(c:Contest {open:true}) merge (u)-[:vote]->(s) return s", {
         id:inReq.Auth.ID,
-        idStory:inReq.body.idStory
+        idStory:inReq.body.id
     })
     .then(function(inSuccess){
-        inRes.json(inSuccess[0][0].data);
+        inRes.status(200).json(inSuccess[0][0].data);
+    },function(inFailure){
+        inRes.status(500).json({exception:"either story doesnt exist or the contest is invalid,"});
+    })
+    .catch(function(inError){
+        inRes.status(500).json(inError);
+    })
+});
+
+router.delete('/user/vote', function(inReq, inRes){
+    db.query("match (u:User {id:{id}})-[v:vote]->(s:Story {id:{idStory}}) delete v return s", {
+        id:inReq.Auth.ID,
+        idStory:inReq.body.id
+    })
+    .then(function(inSuccess){
+        inRes.status(200).json(inSuccess[0][0].data);
     }, function(inFailure){
-        inRes.json(inFailure);
+        inRes.status(500).json(inFailure);
+    })
+    .catch(function(inError){
+        inRes.status(500).json(inError);
     })
 });
 

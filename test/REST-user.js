@@ -99,12 +99,33 @@ describe("User REST", function(){
 
     describe("vote on a story", function(){
 
-        it("should vote a story on PATCH to user/story and return the story", function(done){
+        it("should vote a story on POST to user/vote and return the story", function(done){
             chai.request(server)
-            .patch('/user/story')
+            .post('/user/vote')
             .set("authorization", testAuthorization)
             .send({
-                idStory:idStory
+                id:idStory
+            })
+            .end(function(inError, inResponse){
+                should.not.exist(inError);
+                should.exist(inResponse);
+
+                inResponse.body.should.have.property("id");
+                idStory = inResponse.body.id;
+
+                inResponse.body.should.have.property("story");
+                inResponse.body.story.should.equal(testStory);
+
+                done();
+            });
+        });
+
+        it("should retract a vote on DELETE to user/vote and return the story", function(done){
+            chai.request(server)
+            .delete('/user/vote')
+            .set("authorization", testAuthorization)
+            .send({
+                id:idStory
             })
             .end(function(inError, inResponse){
                 should.not.exist(inError);
