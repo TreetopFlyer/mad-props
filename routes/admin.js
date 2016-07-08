@@ -24,6 +24,28 @@ router.use('/admin', function(inReq, inRes, inNext){
     });
 });
 
+router.get('/admin', function(inReq, inRes){
+    inRes.render("admin", {layout:"main"});
+});
+
+router.get('/admin/user', function(inReq, inRes){
+    db.query("match (u:User) return u")
+    .then(function(inSuccess){
+
+        console.log("total users:", inSuccess.length);
+
+        var model = [];
+        var user;
+        var i;
+        for(i=0; i<inSuccess.length; i++){
+            user = inSuccess[i][0].data
+            model.push(user);
+        }
+        inRes.status(200).json(model);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+});
 router.post('/admin/user', function(inReq, inRes){
     User
     .create({

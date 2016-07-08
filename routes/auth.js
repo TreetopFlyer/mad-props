@@ -39,7 +39,9 @@ router.get('/auth/login', function(inReq, inRes){
         }
     }, function(inError){
         inRes.send(inError);
-    });
+    }).catch(function(inError){
+        inRes.send(inError);
+    })
 });
 
 router.get('/auth/logout', function(inReq, inRes){

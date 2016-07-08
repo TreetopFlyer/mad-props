@@ -1,4 +1,204 @@
-<form>
-    <input type="text" name="name"/>
-    <input type="submit"/>
-</form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<div ng-app="AdminPanel" ng-controller="AdminPanelController">
+
+    <ul class="list-group">
+        <li class="list-group-item">
+            <form>
+                <div class="well well-lg">
+                <fieldset ng-attr-disabled="User.Pending.status.processing && true : false">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.name">
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.title">
+                    </div>
+                    <div class="form-group">
+                        <label>Rank</label>
+                        <select ng-model="User.Pending.edited.rank" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" ng-click="User.Create(User.Pending);">
+                        <span class="glyphicon glyphicon-user"></span>
+                        Create User</button>
+                </fieldset>
+                </div>
+            </form>
+        </li>
+    </ul>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="user in User.All">
+            <div ng-hide="user.status.editing">
+                <button type="submit" class="btn btn-primary" ng-click="user.read(); user.status.editing = true;">
+                    <i class="glyphicon glyphicon-cog"></i>
+                    Settings</button>
+                <strong ng-bind="user.original.name"></strong>
+                <span ng-bind="user.original.title"></span>
+                (<span ng-bind="user.original.rank"></span>)
+            </div>
+            <form ng-show="user.status.editing">
+                <div class="well well-lg">
+                <fieldset ng-attr-disabled="user.status.processing && true : false">
+                    <div class="form-group">
+                        <input type="text" class="form-control"/ ng-model="user.edited.id" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control"/ ng-model="user.edited.name">
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control"/ ng-model="user.edited.title">
+                    </div>
+                    <div class="form-group">
+                        <label>Rank</label>
+                        <select ng-model="user.edited.rank" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-click="user.status.editing = false;">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-warning" ng-click="User.Update(user);">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Save Changes</button>
+                    <button type="submit" class="btn btn-danger"" ng-click="User.Delete(user);">
+                        <span class="glyphicon glyphicon-trash"></span>
+                        Delete User</button>
+                </fieldset>
+                </div>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<script>
+var App = angular.module("AdminPanel", []);
+App.config(["$interpolateProvider", function(inInterpolate){
+    inInterpolate.startSymbol('{[{').endSymbol('}]}');
+}]);
+
+App.factory("User", ["$http", function(inHTTP){
+    var obj = {};
+
+    obj.All = [];
+
+    obj.Constructor = function(inUser){
+        var user = {};
+        user.original = inUser;
+        user.edited = {};
+        user.transfer = function(inFrom, inTo){
+            inTo.id = inFrom.id;
+            inTo.name = inFrom.name;
+            inTo.title = inFrom.title;
+            inTo.rank = inFrom.rank;
+        };
+        user.read = function(){
+            user.transfer(user.original, user.edited);
+        };
+        user.write = function(){
+            user.transfer(user.edited, user.original);
+        };
+        user.status = {
+            editing:false,
+            processing:false,
+        }
+
+        user.read();
+        return user;
+    };
+
+    obj.Download = function(){
+        inHTTP({method:'GET', url:'/admin/user'})
+        .then(function(inSuccess){
+            console.log(inSuccess.data);
+            var i;
+            for(i=0; i<inSuccess.data.length; i++){
+                obj.All.push(obj.Constructor(inSuccess.data[i]));
+            }
+        }, function(inFailure){
+            console.log(inFailure);
+        });
+    };
+
+    obj.Create = function(inUser){
+        if(inUser.status.processing)
+            return;
+
+        inUser.status.processing = true;
+        inHTTP({method:'POST', url:'/admin/user', headers:{'Content-Type':'application/json'}, data:inUser.edited})
+        .then(function(inSuccess){
+            inUser.status.processing = false;
+            inUser.status.editing = false;
+
+            inUser.read();
+            obj.All.unshift(obj.Constructor(inSuccess.data));
+        }, function(inFailure){
+            inUser.status.processing = false;
+
+            console.log(inFailure);
+        });
+    };
+    
+    obj.Update = function(inUser){
+        if(inUser.status.processing)
+            return;
+
+        inUser.status.processing = true;
+        inHTTP({method:'PUT', url:'/admin/user', headers:{'Content-Type':'application/json'}, data:inUser.edited})
+        .then(function(inSuccess){
+            inUser.status.processing = false;
+            inUser.status.editing = false;
+
+            inUser.write();
+            //inUser.status
+        }, function(inFailure){
+            inUser.status.processing = false;
+
+            console.log(inFailure);
+        });
+    };
+
+    obj.Delete = function(inUser){
+
+        console.log("delete called", inUser);
+
+        if(inUser.status.processing)
+            return;
+
+        inHTTP({method:'DELETE', url:'/admin/user', headers:{'Content-Type':'application/json'}, data:{id:inUser.original.id}})
+        .then(function(inSuccess){
+            var i;
+            for(i=0; i<obj.All.length; i++){
+                if(obj.All[i].original.id == inUser.original.id){
+                    obj.All.splice(i, 1);
+                    return;
+                }
+            }
+            inUser.status.processing = false;
+            inUser.status.editing = false;
+
+        }, function(inFailure){
+            console.log(inFailure);
+            inUser.status.processing = false;
+            inUser.status.editing = false;
+
+        });
+    };
+
+    obj.Pending = obj.Constructor({id:0, name:"", title:"", rank:"user"});
+    obj.Download();
+
+    return obj;
+}]);
+App.controller("AdminPanelController", ["$scope", "$http", "User", function(inScope, inHttp, inUser){
+
+    inScope.User = inUser;
+}]);
+</script>
