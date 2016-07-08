@@ -26,7 +26,30 @@ router.post('/user/story', function(inReq, inRes){
         inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
+    });
+});
+router.put('/user/story', function(inReq, inRes){
+    Story.update({
+        id:inReq.body.id,
+        fields:{
+            story:inReq.body.story
+        }
     })
+    .then(function(inSuccess){
+        inRes.status(200).json(inSuccess);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+});
+router.delete('/user/story', function(inReq, inRes){
+    Story.delete({
+        id:inReq.body.id
+    })
+    .then(function(inSuccess){
+        inRes.status(200).json(inSuccess);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
 });
 
 
@@ -39,10 +62,7 @@ router.post('/user/vote', function(inReq, inRes){
         inRes.status(200).json(inSuccess[0][0].data);
     },function(inFailure){
         inRes.status(500).json({exception:"either story doesnt exist or the contest is invalid,"});
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
-    })
+    });
 });
 
 router.delete('/user/vote', function(inReq, inRes){
@@ -54,10 +74,7 @@ router.delete('/user/vote', function(inReq, inRes){
         inRes.status(200).json(inSuccess[0][0].data);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
-    })
-    .catch(function(inError){
-        inRes.status(500).json(inError);
-    })
+    });
 });
 
 module.exports = router;

@@ -43,12 +43,21 @@ var testAuthorization = Auth.Forge(testProfileAdmin.id);
 var testProfileUserAID = "";
 var testProfileUserBID = "";
 
+
 // contest
 var testContest = {
     name:"employee of the month",
     open:true
 };
+var testContestModified = {
+    open:false
+};
 var testContestID = "";
+
+
+// story
+var testStory;
+var testStoryId;
 
 function checkObject(inObject, inTestObject){
     should.exist(inObject);
@@ -73,73 +82,152 @@ describe("REST", function(){
         done();
     });
 
-    describe("Administrator user setup (/admin/user)", function(){
+    /*
+    describe("User", function(){
 
-        describe("POST", function(){
-            it("should create a user and return the user", function(done){
-                chai.request(server)
-                .post('/admin/user')
-                .set("authorization", testAuthorization)
-                .send(testProfileUserA)
-                .then(function(inSuccess){
-                    inSuccess.body.should.have.property("id");
-                    testProfileUserAID = inSuccess.body.id;
-                    checkObject(inSuccess.body, testProfileUserA);
-                    done();
-                }, function(inFailure){
-                    should.not.exist(inFailure);
-                    done();
+        describe("Story setup (/user/story)", function(){
+            describe("POST", function(){
+                it("should create a story on POST", function(done){
+
+                    chai.request(server)
+                    .post('/user/story')
+                    .set('authorization', testAuthorization)
+                    .send({
+
+                    })
                 });
-            });
-        });
-
-        describe("PUT", function(){
-            it("should modify a user on PUT to admin/user and return the user", function(done){
-
-                testProfileUserAModified.id = testProfileUserAID;
-
-                chai.request(server)
-                .put('/admin/user')
-                .set("authorization", testAuthorization)
-                .send(testProfileUserAModified)
-                .then(function(inSuccess){
-                    checkObject(inSuccess.body, testProfileUserAModified);
-                    done();
-                }, function(inFailure){
-                    should.not.exist(inFailure);
-                    done();
-                });
-            });
-        });
-
-        describe("DELETE", function(){
-            it("should delete a user on DELETE to admin/user and return the user", function(done){
-
-                var idObject = {id:testProfileUserAID};
-
-                chai.request(server)
-                .delete('/admin/user')
-                .set("authorization", testAuthorization)
-                .send(idObject)
-                .then(function(inSuccess){
-                    checkObject(inSuccess.body, idObject);
-                    done();
-                }, function(inFailure){
-                    should.not.exist(inFailure);
-                    done();
-                });
-            });
+            })
         });
 
     });
+    */
 
-    describe("Administrator contest setup (/admin/contest)", function(){
+    describe("Administrator", function(){
 
-        describe("POST", function(){
-            it("should create a contest on POST", function(done){
-                done();
+        describe("User setup (/admin/user)", function(){
+            describe("POST", function(){
+                it("should create a user and return the user", function(done){
+                    chai.request(server)
+                    .post('/admin/user')
+                    .set("authorization", testAuthorization)
+                    .send(testProfileUserA)
+                    .then(function(inSuccess){
+                        inSuccess.body.should.have.property("id");
+                        testProfileUserAID = inSuccess.body.id;
+                        checkObject(inSuccess.body, testProfileUserA);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
+            });
+            describe("PUT", function(){
+                it("should modify a user on PUT to admin/user and return the user", function(done){
+
+                    testProfileUserAModified.id = testProfileUserAID;
+
+                    chai.request(server)
+                    .put('/admin/user')
+                    .set("authorization", testAuthorization)
+                    .send(testProfileUserAModified)
+                    .then(function(inSuccess){
+                        checkObject(inSuccess.body, testProfileUserAModified);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
+            });
+            describe("DELETE", function(){
+                it("should delete a user on DELETE to admin/user and return the user", function(done){
+
+                    var idObject = {id:testProfileUserAID};
+
+                    chai.request(server)
+                    .delete('/admin/user')
+                    .set("authorization", testAuthorization)
+                    .send(idObject)
+                    .then(function(inSuccess){
+                        checkObject(inSuccess.body, idObject);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
             });
         });
+
+        describe("Contest setup (/admin/contest)", function(){
+            describe("POST", function(){
+                it("should create a contest on POST", function(done){
+
+                    chai.request(server)
+                    .post('/admin/contest')
+                    .set('authorization', testAuthorization)
+                    .send(testContest)
+                    .then(function(inSuccess){
+                        inSuccess.body.should.have.property("id");
+                        testContestID = inSuccess.body.id;
+                        checkObject(inSuccess.body, testContest);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
+            });
+            describe("PUT", function(){
+                it("should update a contest on PUT", function(done){
+
+                    testContestModified.id = testContestID;
+
+                    chai.request(server)
+                    .put('/admin/contest')
+                    .set('authorization', testAuthorization)
+                    .send(testContestModified)
+                    .then(function(inSuccess){
+                        checkObject(inSuccess.body, testContestModified);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
+            });
+            describe("DELETE", function(){
+                it("should delete a contest on DELETE", function(done){
+
+                    var idObject = {id:testProfileUserAID};
+
+                    chai.request(server)
+                    .delete('/admin/contest')
+                    .set('authorization', testAuthorization)
+                    .send(idObject)
+                    .then(function(inSuccess){
+                        checkObject(inSuccess.body, idObject);
+                        done();
+                    }, function(inFailure){
+                        should.not.exist(inFailure);
+                        done();
+                    });
+                });
+            });
+        });
+
+        /*
+        describe("Contest award (/admin/contest/award)", function(){
+            describe("POST", function(){
+                chai.request(server)
+                .post('/admin/contest/award/')
+                .set('authorization', testAuthorization)
+                .send()
+            });
+        });
+        */
+
     });
 
 });
