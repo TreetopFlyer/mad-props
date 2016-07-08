@@ -52,17 +52,20 @@ router.delete('/user/story', function(inReq, inRes){
     });
 });
 
-
 router.post('/user/vote', function(inReq, inRes){
     db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}})-[:enter]->(c:Contest {open:true}) merge (u)-[:vote]->(s) return s", {
         id:inReq.Auth.ID,
         idStory:inReq.body.id
     })
     .then(function(inSuccess){
-        inRes.status(200).json(inSuccess[0][0].data);
-    },function(inFailure){
+        if(inSuccess[0][0]){
+            inRes.status(200).json(inSuccess[0][0].data);
+        }else{
+            return Promise.reject(inSuccess);
+        } 
+    }).catch(function(inError){
         inRes.status(500).json({exception:"either story doesnt exist or the contest is invalid,"});
-    });
+    })
 });
 
 router.delete('/user/vote', function(inReq, inRes){
