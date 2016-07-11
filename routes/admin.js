@@ -31,9 +31,6 @@ router.get('/admin', function(inReq, inRes){
 router.get('/admin/user', function(inReq, inRes){
     db.query("match (u:User) return u")
     .then(function(inSuccess){
-
-        console.log("total users:", inSuccess.length);
-
         var model = [];
         var user;
         var i;
@@ -88,6 +85,22 @@ router.delete('/admin/user', function(inReq, inRes){
     });
 });
 
+router.get('/admin/contest', function(inReq, inRes){
+    db.query("match (c:Contest) return c")
+    .then(function(inSuccess){
+
+        var model = [];
+        var contest;
+        var i;
+        for(i=0; i<inSuccess.length; i++){
+            contest = inSuccess[i][0].data
+            model.push(contest);
+        }
+        inRes.status(200).json(model);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+});
 router.post('/admin/contest', function(inReq, inRes){
     Contest
     .create({
@@ -139,7 +152,6 @@ router.post('/admin/contest/award', function(inReq, inRes){
         inRes.status(500).json(inFailure);
     });
 });
-
 router.delete('/admin/contest/award', function(inReq, inRes){
     db.query("match (c:Contest {id:{id}})-[a:award]->(s:Story {id:{idStory}}) delete a return s", {
         id:inReq.body.idContest,
