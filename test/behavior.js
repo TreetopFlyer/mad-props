@@ -162,6 +162,30 @@ describe("Scenario", function(){
         });
     });
 
+    it("user B should be able to write a story about user A during the contest", function(done){
+        chai.request(server)
+        .post('/user/story')
+        .set('authorization', testAuthorizationUserB)
+        .send({
+            idAbout:testProfileUserAID,
+            idContest:testContestID,
+            story:"a cool dude."
+        })
+        .then(function(inSuccess){
+
+            inSuccess.body.should.have.property('id');
+            testStoryID = inSuccess.body.id;
+
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
     it("anyone (including the admin) can vote on the story", function(done){
         chai.request(server)
         .post('/user/vote')
@@ -225,5 +249,87 @@ describe("Scenario", function(){
             done(inError);
         });
     });
+
+    it("an admin should be able to setup a new contest again", function(done){
+        chai.request(server)
+        .post('/admin/contest')
+        .set('authorization', testAuthorizationAdmin)
+        .send(testContest)
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+
+            inSuccess.body.should.have.property('id');
+            testContestID = inSuccess.body.id;
+
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("user A should be able to write a story about user B during the new contest", function(done){
+        chai.request(server)
+        .post('/user/story')
+        .set('authorization', testAuthorizationUserA)
+        .send({
+            idAbout:testProfileUserBID,
+            idContest:testContestID,
+            story:"Man, he did it again!"
+        })
+        .then(function(inSuccess){
+
+            inSuccess.body.should.have.property('id');
+            testStoryID = inSuccess.body.id;
+
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("the admin can vote on the story", function(done){
+        chai.request(server)
+        .post('/user/vote')
+        .set('authorization', testAuthorizationAdmin)
+        .send({
+            id:testStoryID
+        })
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("user B can vote on the story", function(done){
+        chai.request(server)
+        .post('/user/vote')
+        .set('authorization', testAuthorizationUserB)
+        .send({
+            id:testStoryID
+        })
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+
 
 });

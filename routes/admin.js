@@ -24,10 +24,6 @@ router.use('/admin', function(inReq, inRes, inNext){
     });
 });
 
-router.get('/admin', function(inReq, inRes){
-    inRes.render("admin", {layout:"main"});
-});
-
 router.get('/admin/user', function(inReq, inRes){
     db.query("match (u:User) return u")
     .then(function(inSuccess){

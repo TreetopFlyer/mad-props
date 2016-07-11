@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    </head>
+    <body>
+
+<div ng-app="AdminPanel" ng-controller="AdminPanelController">
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">People</div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item well well-lg">
+                            <form>
+                                <fieldset ng-attr-disabled="User.Pending.status.processing && true : false">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.title">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Rank</label>
+                                        <select ng-model="User.Pending.edited.rank" class="form-control">
+                                            <option value="user">User</option>
+                                            <option value="admin">Administrator</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary" ng-click="User.Create(User.Pending);">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                        Create</button>
+                                </fieldset>
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="user in User.All">
+                            <div ng-hide="user.status.editing">
+                                <button type="submit" class="btn btn-primary" ng-click="user.read(); user.status.editing = true;">
+                                    <i class="glyphicon glyphicon-cog"></i>
+                                    Settings</button>
+                                <strong ng-bind="user.original.name"></strong>
+                                <span ng-bind="user.original.title"></span>
+                                (<span ng-bind="user.original.rank"></span>)
+                            </div>
+                            <form ng-show="user.status.editing">
+                                <div class="well well-lg">
+                                <fieldset ng-attr-disabled="user.status.processing && true : false">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control"/ ng-model="user.edited.id" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control"/ ng-model="user.edited.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Rank</label>
+                                        <select ng-model="user.edited.rank" class="form-control">
+                                            <option value="user">User</option>
+                                            <option value="admin">Administrator</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" ng-click="user.status.editing = false;">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Cancel</button>
+                                    <button type="submit" class="btn btn-warning" ng-click="Contest.Update(user);">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                        Save Changes</button>
+                                    <button type="submit" class="btn btn-danger"" ng-click="Contest.Delete(user);">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        Delete</button>
+                                </fieldset>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">Contests</div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item well well-lg ">
+                            <form>
+                                <fieldset ng-attr-disabled="Contest.Pending.status.processing && true : false">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control"/ ng-model="Contest.Pending.edited.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select ng-model="Contest.Pending.edited.open" class="form-control">
+                                            <option value="true">Open</option>
+                                            <option value="false">Closed</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary" ng-click="Contest.Create(Contest.Pending);">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                        Create</button>
+                                </fieldset>
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="contest in Contest.All">
+                            <div ng-hide="contest.status.editing">
+                                <button type="submit" class="btn btn-primary" ng-click="contest.read(); contest.status.editing = true;">
+                                    <i class="glyphicon glyphicon-cog"></i>
+                                    Settings</button>
+                                <strong ng-bind="contest.original.name"></strong>
+                                <span ng-bind="contest.original.title"></span>
+                                (active: <strong ng-bind="contest.original.open"></strong>)
+                            </div>
+                            <form ng-show="contest.status.editing">
+                                <div class="well well-lg">
+                                <fieldset ng-attr-disabled="contest.status.processing && true : false">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control"/ ng-model="contest.edited.id" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control"/ ng-model="contest.edited.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select ng-model="contest.edited.open" class="form-control">
+                                            <option value="true">Open</option>
+                                            <option value="false">Closed</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" ng-click="contest.status.editing = false;">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Cancel</button>
+                                    <button type="submit" class="btn btn-warning" ng-click="Contest.Update(contest);">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                        Save Changes</button>
+                                    <button type="submit" class="btn btn-danger"" ng-click="Contest.Delete(contest);">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        Delete</button>
+                                </fieldset>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+var App = angular.module("AdminPanel", []);
+App.config(["$interpolateProvider", function(inInterpolate){
+    inInterpolate.startSymbol('{[{').endSymbol('}]}');
+}]);
+
+App.factory("Editor", ["$http", function(inHTTP){
+    var obj = {};
+    obj.Create = function(inConfig){
+        var Editor = {};
+        Editor.All = [];
+        Editor.Config = inConfig;
+        Editor.Constructor = function(inDataType){
+            var user = {};
+            user.original = inDataType;
+            user.edited = {};
+            user.transfer = function(inFrom, inTo){
+                for(prop in Editor.Config.Model){
+                    inTo[prop] = inFrom[prop];
+                }
+            };
+            user.read = function(){
+                user.transfer(user.original, user.edited);
+            };
+            user.write = function(){
+                user.transfer(user.edited, user.original);
+            };
+            user.status = {
+                editing:false,
+                processing:false,
+            }
+
+            user.read();
+            return user;
+        };
+        Editor.Download = function(){
+            inHTTP({method:'GET', url:Editor.Config.Endpoint})
+            .then(function(inSuccess){
+                console.log(inSuccess.data);
+                var i;
+                for(i=0; i<inSuccess.data.length; i++){
+                    Editor.All.push(Editor.Constructor(inSuccess.data[i]));
+                }
+            }, function(inFailure){
+                console.log(inFailure);
+            });
+        };
+        Editor.Create = function(inDataType){
+            if(inDataType.status.processing)
+                return;
+
+            inDataType.status.processing = true;
+            inHTTP({method:'POST', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
+            .then(function(inSuccess){
+                inDataType.status.processing = false;
+                inDataType.status.editing = false;
+                inDataType.read();
+                Editor.All.unshift(Editor.Constructor(inSuccess.data));
+            }, function(inFailure){
+                inDataType.status.processing = false;
+                console.log(inFailure);
+            });
+        };
+        Editor.Update = function(inDataType){
+            if(inDataType.status.processing)
+                return;
+
+            inDataType.status.processing = true;
+            inHTTP({method:'PUT', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
+            .then(function(inSuccess){
+                inDataType.status.processing = false;
+                inDataType.status.editing = false;
+                inDataType.write();
+            }, function(inFailure){
+                inDataType.status.processing = false;
+                console.log(inFailure);
+            });
+        };
+        Editor.Delete = function(inDataType){
+            if(inDataType.status.processing)
+                return;
+
+            inHTTP({method:'DELETE', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:{id:inDataType.original.id}})
+            .then(function(inSuccess){
+                var i;
+                for(i=0; i<Editor.All.length; i++){
+                    if(Editor.All[i].original.id == inDataType.original.id){
+                        Editor.All.splice(i, 1);
+                        return;
+                    }
+                }
+                inDataType.status.processing = false;
+                inDataType.status.editing = false;
+
+            }, function(inFailure){
+                console.log(inFailure);
+                inDataType.status.processing = false;
+                inDataType.status.editing = false;
+            });
+        };
+        Editor.Pending = Editor.Constructor(Editor.Config.Model);
+        return Editor;
+    };
+
+    return obj;
+}]);
+
+App.controller("AdminPanelController", ["$scope", "$http", "Editor", function(inScope, inHttp, inEditor){
+
+    inScope.User = inEditor.Create({
+        Model:{
+            id:0,
+            name:"",
+            title:"",
+            rank:"user"
+        },
+        Endpoint:'/admin/user'
+    });
+    inScope.User.Download();
+
+    inScope.Contest = inEditor.Create({
+        Model:{
+            id:0,
+            name:"",
+            open:"true"
+        },
+        Endpoint:'/admin/contest'
+    });
+    inScope.Contest.Download();
+
+}]);
+</script>
+
+    </body>
+</html>
