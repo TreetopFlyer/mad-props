@@ -11,28 +11,25 @@
 
         <div class="col-md-4">
             <div class="panel panel-default">
-                <div class="panel-heading">People</div>
+                <div class="panel-heading">Contest</div>
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item well well-lg">
                             <form>
                                 <fieldset ng-attr-disabled="User.Pending.status.processing && true : false">
                                     <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Title</label>
-                                        <input type="text" class="form-control"/ ng-model="User.Pending.edited.title">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Rank</label>
-                                        <select ng-model="User.Pending.edited.rank" class="form-control">
-                                            <option value="user">User</option>
-                                            <option value="admin">Administrator</option>
+                                        <label>About</label>
+                                        <select ng-model="User.Pending.edited.idAbout" class="form-control">
+                                            <option value="0">- select one -</option>
+                                            <option value="1">Person A</option>
+                                            <option value="2">Person B</option>
+                                            <option value="2">Person C</option>
                                         </select>
                                     </div>
-                                    
+                                    <div class="form-group">
+                                        <label>Story</label>
+                                        <textarea class="form-control"/ ng-model="User.Pending.edited.story"></textarea>
+                                    </div>
                                     <button type="submit" class="btn btn-primary" ng-click="User.Create(User.Pending);">
                                         <span class="glyphicon glyphicon-plus"></span>
                                         Create</button>
@@ -89,7 +86,7 @@
 </div>
 
 <script>
-var App = angular.module("AdminPanel", []);
+var App = angular.module("Home", []);
 App.config(["$interpolateProvider", function(inInterpolate){
     inInterpolate.startSymbol('{[{').endSymbol('}]}');
 }]);
@@ -195,14 +192,14 @@ App.factory("Editor", ["$http", function(inHTTP){
     return obj;
 }]);
 
-App.controller("HomeController", ["$scope", "$http", "Editor", function(inScope, inHttp, inEditor){
-
+App.controller("HomeController", ["$scope", "Editor", function(inScope, inEditor){
+    
     inScope.Current = inEditor.Create({
         Model:{
             id:0,
             idAuthor:0,
             idAbout:0,
-            idContest:0
+            idContest:0,
             story:""
         },
         Endpoint:'/user/story'

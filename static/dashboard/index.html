@@ -99,11 +99,8 @@
                                         <input type="text" class="form-control"/ ng-model="Contest.Pending.edited.name">
                                     </div>
                                     <div class="form-group">
-                                        <label>Status</label>
-                                        <select ng-model="Contest.Pending.edited.open" class="form-control">
-                                            <option value="true">Open</option>
-                                            <option value="false">Closed</option>
-                                        </select>
+                                        <label>Open</label>
+                                        <input type="checkbox" ng-model="Contest.Pending.edited.open">
                                     </div>
                                     
                                     <button type="submit" class="btn btn-primary" ng-click="Contest.Create(Contest.Pending);">
@@ -127,18 +124,15 @@
                                 <div class="well well-lg">
                                 <fieldset ng-attr-disabled="contest.status.processing && true : false">
                                     <div class="form-group">
-                                        <input type="text" class="form-control"/ ng-model="contest.edited.id" readonly>
+                                        <input type="text" class="form-control" ng-model="contest.edited.id" readonly>
                                     </div>
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" class="form-control"/ ng-model="contest.edited.name">
+                                        <input type="text" class="form-control" ng-model="contest.edited.name">
                                     </div>
                                     <div class="form-group">
-                                        <label>Status</label>
-                                        <select ng-model="contest.edited.open" class="form-control">
-                                            <option value="true">Open</option>
-                                            <option value="false">Closed</option>
-                                        </select>
+                                        <label>Open</label>
+                                        <input type="checkbox" ng-model="contest.edited.open">
                                     </div>
                                     <button type="submit" class="btn btn-primary" ng-click="contest.status.editing = false;">
                                         <span class="glyphicon glyphicon-remove"></span>
@@ -286,7 +280,7 @@ App.controller("AdminPanelController", ["$scope", "$http", "Editor", function(in
         Model:{
             id:0,
             name:"",
-            open:"true"
+            open:true
         },
         Endpoint:'/admin/contest'
     });

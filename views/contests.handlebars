@@ -1,0 +1,33 @@
+
+
+{{#each model}}
+    <div>
+        <h3>{{this.contest.name}}</h3>
+
+        <form>
+            <p>{{../id}}</p>
+            <select>
+                {{#each ../users}}
+                    <option value="{{this.id}}">{{this.name}}</option>
+                {{/each}}
+            </select>
+            <textarea></textarea>
+            <button type="submit">post story</button>
+        </form>
+        <ul>
+        {{#each this.stories}}
+            <li>
+                <div>
+                    {{this.author.name}} gives mad props to {{this.about.name}}
+                </div>
+                <div>
+                    {{this.story.story}}
+                </div>
+                <div>
+                    votes: {{this.votes}}
+                </div>
+            </li>
+        {{/each}}
+        </ul>
+    </div>
+{{/each}}
