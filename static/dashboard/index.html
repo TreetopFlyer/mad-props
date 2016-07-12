@@ -2,6 +2,7 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="/static/js/editor.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     </head>
     <body>
@@ -71,10 +72,10 @@
                                     <button type="submit" class="btn btn-primary" ng-click="user.status.editing = false;">
                                         <span class="glyphicon glyphicon-remove"></span>
                                         Cancel</button>
-                                    <button type="submit" class="btn btn-warning" ng-click="Contest.Update(user);">
+                                    <button type="submit" class="btn btn-warning" ng-click="User.Update(user);">
                                         <span class="glyphicon glyphicon-floppy-disk"></span>
                                         Save Changes</button>
-                                    <button type="submit" class="btn btn-danger"" ng-click="Contest.Delete(user);">
+                                    <button type="submit" class="btn btn-danger"" ng-click="User.Delete(user);">
                                         <span class="glyphicon glyphicon-trash"></span>
                                         Delete</button>
                                 </fieldset>
@@ -157,113 +158,12 @@
 </div>
 
 <script>
-var App = angular.module("AdminPanel", []);
+var App = angular.module("AdminPanel", ["Editor"]);
 App.config(["$interpolateProvider", function(inInterpolate){
     inInterpolate.startSymbol('{[{').endSymbol('}]}');
 }]);
 
-App.factory("Editor", ["$http", function(inHTTP){
-    var obj = {};
-    obj.Create = function(inConfig){
-        var Editor = {};
-        Editor.All = [];
-        Editor.Config = inConfig;
-        Editor.Constructor = function(inDataType){
-            var user = {};
-            user.original = inDataType;
-            user.edited = {};
-            user.transfer = function(inFrom, inTo){
-                for(prop in Editor.Config.Model){
-                    inTo[prop] = inFrom[prop];
-                }
-            };
-            user.read = function(){
-                user.transfer(user.original, user.edited);
-            };
-            user.write = function(){
-                user.transfer(user.edited, user.original);
-            };
-            user.status = {
-                editing:false,
-                processing:false,
-            }
-
-            user.read();
-            return user;
-        };
-        Editor.Download = function(){
-            inHTTP({method:'GET', url:Editor.Config.Endpoint})
-            .then(function(inSuccess){
-                console.log(inSuccess.data);
-                var i;
-                for(i=0; i<inSuccess.data.length; i++){
-                    Editor.All.push(Editor.Constructor(inSuccess.data[i]));
-                }
-            }, function(inFailure){
-                console.log(inFailure);
-            });
-        };
-        Editor.Create = function(inDataType){
-            if(inDataType.status.processing)
-                return;
-
-            inDataType.status.processing = true;
-            inHTTP({method:'POST', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
-            .then(function(inSuccess){
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-                inDataType.read();
-                Editor.All.unshift(Editor.Constructor(inSuccess.data));
-            }, function(inFailure){
-                inDataType.status.processing = false;
-                console.log(inFailure);
-            });
-        };
-        Editor.Update = function(inDataType){
-            if(inDataType.status.processing)
-                return;
-
-            inDataType.status.processing = true;
-            inHTTP({method:'PUT', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
-            .then(function(inSuccess){
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-                inDataType.write();
-            }, function(inFailure){
-                inDataType.status.processing = false;
-                console.log(inFailure);
-            });
-        };
-        Editor.Delete = function(inDataType){
-            if(inDataType.status.processing)
-                return;
-
-            inHTTP({method:'DELETE', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:{id:inDataType.original.id}})
-            .then(function(inSuccess){
-                var i;
-                for(i=0; i<Editor.All.length; i++){
-                    if(Editor.All[i].original.id == inDataType.original.id){
-                        Editor.All.splice(i, 1);
-                        return;
-                    }
-                }
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-
-            }, function(inFailure){
-                console.log(inFailure);
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-            });
-        };
-        Editor.Pending = Editor.Constructor(Editor.Config.Model);
-        return Editor;
-    };
-
-    return obj;
-}]);
-
-App.controller("AdminPanelController", ["$scope", "$http", "Editor", function(inScope, inHttp, inEditor){
+App.controller("AdminPanelController", ["$scope", "Editor", function(inScope, inEditor){
 
     inScope.User = inEditor.Create({
         Model:{

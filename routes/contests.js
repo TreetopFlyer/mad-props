@@ -17,7 +17,7 @@ router.get('/contests', function(inReq, inRes){
             users.push(inSuccess[i][0].data);
         }
 
-        return db.query("match (c:Contest {open:true})<-[:enter]-(s:Story) optional match (author:User)-[:wrote]->(s)-[:recognize]->(about:User) optional match (voter:User)-[v:vote]->(s) with c, author, s, about, count(v) as votes  return c, collect(author), collect(s), collect(about), collect(votes)")
+        return db.query("match (c:Contest {open:true}) optional match (c)<-[:enter]-(s:Story) optional match (author:User)-[:wrote]->(s)-[:recognize]->(about:User) optional match (voter:User)-[v:vote]->(s) with c, author, s, about, count(v) as votes  return c, collect(author), collect(s), collect(about), collect(votes)")
     })
     .then(function(inSuccess){
         for(i=0; i<inSuccess.length; i++){
@@ -35,7 +35,8 @@ router.get('/contests', function(inReq, inRes){
             }
             model.push(contest);
         }
-        inRes.render("contests", {layout:"main", id:inReq.Auth.ID, model:model, users:users});
+        //inRes.render("contests", {layout:"main", id:inReq.Auth.ID, model:model, users:users});
+        inRes.status(200).json({contests:model, users:users, id:inReq.Auth.ID});
     }, function(inFailure){
         inRes.status(500).json(inFailure);
     });

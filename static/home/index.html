@@ -2,35 +2,34 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="/static/js/editor.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     </head>
     <body>
 
-<div ng-app="Home" ng-controller="HomeController">
-    <div class="row">
+        <div ng-app="Home" ng-controller="HomeController">
+            <div class="row">
 
-        <div class="col-md-4">
+        <div class="col-md-4" ng-repeat="contest in Contests">
             <div class="panel panel-default">
-                <div class="panel-heading">Contest</div>
+                <div class="panel-heading">People</div>
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item well well-lg">
                             <form>
-                                <fieldset ng-attr-disabled="User.Pending.status.processing && true : false">
+                                <fieldset ng-attr-disabled="contest.Pending.status.processing && true : false">
                                     <div class="form-group">
-                                        <label>About</label>
-                                        <select ng-model="User.Pending.edited.idAbout" class="form-control">
-                                            <option value="0">- select one -</option>
-                                            <option value="1">Person A</option>
-                                            <option value="2">Person B</option>
-                                            <option value="2">Person C</option>
+                                        <label>Recognition</label>
+                                        <select ng-model="contest.Pending.edited.idAbout" class="form-control">
+                                            <option ng-repeat="user in Users" value="{[{user.id}]}">{[{user.name}]}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Story</label>
-                                        <textarea class="form-control"/ ng-model="User.Pending.edited.story"></textarea>
+                                        <textarea type="text" class="form-control"/ ng-model="contest.Pending.edited.story"></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" ng-click="User.Create(User.Pending);">
+                                    
+                                    <button type="submit" class="btn btn-primary" ng-click="contest.Create(contest.Pending);">
                                         <span class="glyphicon glyphicon-plus"></span>
                                         Create</button>
                                 </fieldset>
@@ -38,42 +37,40 @@
                         </li>
                     </ul>
                     <ul class="list-group">
-                        <li class="list-group-item" ng-repeat="user in User.All">
+                        <li class="list-group-item" ng-repeat="story in contest.All">
                             <div ng-hide="user.status.editing">
-                                <button type="submit" class="btn btn-primary" ng-click="user.read(); user.status.editing = true;">
+                                <button type="submit" class="btn btn-primary" ng-click="story.read(); story.status.editing = true;">
                                     <i class="glyphicon glyphicon-cog"></i>
                                     Settings</button>
-                                <strong ng-bind="user.original.name"></strong>
-                                <span ng-bind="user.original.title"></span>
-                                (<span ng-bind="user.original.rank"></span>)
+                                <div>
+                                    <strong ng-bind="story.original.idAuthor"></strong>
+                                    <span>gives mad props to:</span>
+                                    <strong ng-bind="story.original.idAuthor"></strong>
+                                </div>
+                                <strong>Votes:</strong><span ng-bind="story.original.votes"></span>
+                                <div ng-bind="story.original.story"></div>
                             </div>
+
                             <form ng-show="user.status.editing">
                                 <div class="well well-lg">
-                                <fieldset ng-attr-disabled="user.status.processing && true : false">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control"/ ng-model="user.edited.id" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control"/ ng-model="user.edited.name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Rank</label>
-                                        <select ng-model="user.edited.rank" class="form-control">
-                                            <option value="user">User</option>
-                                            <option value="admin">Administrator</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" ng-click="user.status.editing = false;">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                        Cancel</button>
-                                    <button type="submit" class="btn btn-warning" ng-click="Contest.Update(user);">
-                                        <span class="glyphicon glyphicon-floppy-disk"></span>
-                                        Save Changes</button>
-                                    <button type="submit" class="btn btn-danger"" ng-click="Contest.Delete(user);">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                        Delete</button>
-                                </fieldset>
+                                    <fieldset ng-attr-disabled="user.status.processing && true : false">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"/ ng-model="user.edited.id" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Story</label>
+                                            <textarea type="text" class="form-control"/ ng-model="story.edited.story"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" ng-click="user.status.editing = false;">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                            Cancel</button>
+                                        <button type="submit" class="btn btn-warning" ng-click="Contest.Update(user);">
+                                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                                            Save Changes</button>
+                                        <button type="submit" class="btn btn-danger"" ng-click="Contest.Delete(user);">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                            Delete</button>
+                                    </fieldset>
                                 </div>
                             </form>
                         </li>
@@ -82,129 +79,75 @@
             </div>
         </div>
 
-    </div>
-</div>
+            </div>
+        </div>
 
 <script>
-var App = angular.module("Home", []);
+
+var scope;
+
+var App = angular.module("Home", ["Editor"]);
 App.config(["$interpolateProvider", function(inInterpolate){
     inInterpolate.startSymbol('{[{').endSymbol('}]}');
 }]);
 
-App.factory("Editor", ["$http", function(inHTTP){
-    var obj = {};
-    obj.Create = function(inConfig){
-        var Editor = {};
-        Editor.All = [];
-        Editor.Config = inConfig;
-        Editor.Constructor = function(inDataType){
-            var user = {};
-            user.original = inDataType;
-            user.edited = {};
-            user.transfer = function(inFrom, inTo){
-                for(prop in Editor.Config.Model){
-                    inTo[prop] = inFrom[prop];
-                }
-            };
-            user.read = function(){
-                user.transfer(user.original, user.edited);
-            };
-            user.write = function(){
-                user.transfer(user.edited, user.original);
-            };
-            user.status = {
-                editing:false,
-                processing:false,
+App.controller("HomeController", ["$scope", "$http", "Editor", function(inScope, inHTTP, inEditor){
+
+    inScope.Model = {};
+
+    inScope.Contests = [];
+    inScope.Users = [];
+    inScope.ID = undefined;
+
+    scope = inScope.Contests;
+
+    inHTTP({method:"GET", url:'/contests'})
+    .then(function(inSuccess){
+
+        inScope.Users = inSuccess.data.users;
+        inScope.ID = inSuccess.data.id;
+
+        var editor;
+        var story, contest;
+        var formattedStories;
+        var i, j;
+
+        for(i=0; i<inSuccess.data.contests.length; i++){
+            contest = inSuccess.data.contests[i];
+            editor = inEditor.Create({
+                Model:{
+                    id:0,
+                    idAbout:0,
+                    idAuthor:inSuccess.data.id,
+                    idContest:contest.contest.id,
+                    story:"",
+                    votes:0
+                },
+                Endpoint:'/user/story'
+            });
+
+            formattedStories = [];
+            for(j=0; j<contest.stories.length; j++){
+                story = contest.stories[j];
+                formattedStories.push({
+                    id:story.story.id,
+                    idAbout:story.about.id,
+                    idAuthor:story.author.id,
+                    idContest:contest.contest.id,
+                    story:story.story.story,
+                    votes:story.votes
+                });
             }
 
-            user.read();
-            return user;
-        };
-        Editor.Download = function(){
-            inHTTP({method:'GET', url:Editor.Config.Endpoint})
-            .then(function(inSuccess){
-                console.log(inSuccess.data);
-                var i;
-                for(i=0; i<inSuccess.data.length; i++){
-                    Editor.All.push(Editor.Constructor(inSuccess.data[i]));
-                }
-            }, function(inFailure){
-                console.log(inFailure);
-            });
-        };
-        Editor.Create = function(inDataType){
-            if(inDataType.status.processing)
-                return;
+            editor.Seed(formattedStories);
+            inScope.Contests.push(editor);
+        }
 
-            inDataType.status.processing = true;
-            inHTTP({method:'POST', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
-            .then(function(inSuccess){
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-                inDataType.read();
-                Editor.All.unshift(Editor.Constructor(inSuccess.data));
-            }, function(inFailure){
-                inDataType.status.processing = false;
-                console.log(inFailure);
-            });
-        };
-        Editor.Update = function(inDataType){
-            if(inDataType.status.processing)
-                return;
+        console.log(inScope.Contests);
 
-            inDataType.status.processing = true;
-            inHTTP({method:'PUT', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:inDataType.edited})
-            .then(function(inSuccess){
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-                inDataType.write();
-            }, function(inFailure){
-                inDataType.status.processing = false;
-                console.log(inFailure);
-            });
-        };
-        Editor.Delete = function(inDataType){
-            if(inDataType.status.processing)
-                return;
-
-            inHTTP({method:'DELETE', url:Editor.Config.Endpoint, headers:{'Content-Type':'application/json'}, data:{id:inDataType.original.id}})
-            .then(function(inSuccess){
-                var i;
-                for(i=0; i<Editor.All.length; i++){
-                    if(Editor.All[i].original.id == inDataType.original.id){
-                        Editor.All.splice(i, 1);
-                        return;
-                    }
-                }
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-
-            }, function(inFailure){
-                console.log(inFailure);
-                inDataType.status.processing = false;
-                inDataType.status.editing = false;
-            });
-        };
-        Editor.Pending = Editor.Constructor(Editor.Config.Model);
-        return Editor;
-    };
-
-    return obj;
-}]);
-
-App.controller("HomeController", ["$scope", "Editor", function(inScope, inEditor){
-    
-    inScope.Current = inEditor.Create({
-        Model:{
-            id:0,
-            idAuthor:0,
-            idAbout:0,
-            idContest:0,
-            story:""
-        },
-        Endpoint:'/user/story'
+    }, function(inFailure){
+        console.log(inFailure);
     });
-
 }]);
 </script>
 
