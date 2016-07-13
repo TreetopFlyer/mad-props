@@ -11,6 +11,7 @@ server.set("view engine", "handlebars");
 server.use('/static', express.static(__dirname+'/static'));
 server.use('/', bodyParser.json());
 
+server.use('/', require('./middleware/cors'));
 server.use('/', require('./middleware/auth'));
 
 server.use('/', require('./routes/auth'));
