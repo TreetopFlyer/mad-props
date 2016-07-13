@@ -70,7 +70,72 @@ function checkObject(inObject, inTestObject){
     }
 };
 
-describe("Scenario", function(){
+describe("Authentication", function(){
+
+    var express;
+    var authorization;
+    before(function(done){
+        express = server.listen(80);
+        done();
+    });
+    after(function(done){
+        express.close();
+        done();
+    });
+
+    it("checking auth/login with GET and empty authorization header should confirm a logged out status", function(done){
+        chai.request(express)
+        .get('/auth/login')
+        .set('authorization', "")
+        .send()
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            inSuccess.body.should.have.property('message');
+            inSuccess.body.message.should.equal("you are NOT logged in");
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("forging a profile with /auth/impersonate should return a set of credentials", function(done){
+        chai.request(express)
+        .get('/auth/impersonate/some-admin-id')
+        .send()
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            inSuccess.body.should.have.property('authorization');
+            authorization = inSuccess.body.authorization;
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("checking auth/login with GET but with the new authorization header should confirm a logged in status", function(done){
+        chai.request(express)
+        .get('/auth/login')
+        .set('authorization', authorization)
+        .send()
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            inSuccess.body.should.have.property('message');
+            inSuccess.body.message.should.equal("you are logged in");
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+})
+
+describe("Graph Scenario", function(){
 
     var express;
     before(function(done){
