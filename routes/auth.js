@@ -7,7 +7,7 @@ router.get('/auth/impersonate/:identity', function(inReq, inRes){
 
     inReq.Auth.LogOut();
     inReq.Auth.LogIn(inReq.params.identity, Auth.Sign(inReq.params.identity));
-    inRes.status(200).json({authorization:Auth.Forge(inReq.params.identity)});
+    inRes.status(200).json({authorization:Auth.Forge(inReq.params.identity), id:inReq.params.identity});
 
 });
 
@@ -21,7 +21,7 @@ router.get('/auth/login', function(inReq, inRes){
 router.post('/auth/login', function(inReq, inRes){
 
     if(inReq.Auth.LoggedIn){
-        inRes.status(200).json({authorization:Auth.Forge(inReq.Auth.ID)});
+        inRes.status(200).json({authorization:Auth.Forge(inReq.Auth.ID), id:inReq.Auth.ID});
         return;
     }
 
@@ -43,7 +43,10 @@ router.post('/auth/login', function(inReq, inRes){
             var signature = Auth.Sign(inData[0][0].data.id);
 
             inReq.Auth.LogIn(id, signature);
-            inRes.status(200).json({authorization:Auth.Forge(id)});
+            inRes.status(200).json({
+                authorization:Auth.Forge(id),
+                id:inReq.Auth.ID
+            });
         }
     }, function(inError){
         inRes.status(500).json(inError);

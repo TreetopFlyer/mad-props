@@ -17,6 +17,6 @@ Auth.Verify = function(inMessage, inSignedMessage){
 };
 Auth.Forge = function(inID){
 	return Auth.Config.KeyID+"="+inID+"; "+Auth.Config.KeyIDHash+"="+Auth.Sign(inID);
-}
+};
 
 module.exports = Auth;
