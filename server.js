@@ -14,6 +14,6 @@ server.use('/', require('./middleware/auth'));
 server.use('/', require('./routes/auth'));
 server.use('/', require('./routes/admin'));
 server.use('/', require('./routes/user'));
-server.use('/', require('./routes/contests'));
+server.use('/', require('./routes/data'));
 
 module.exports = server;

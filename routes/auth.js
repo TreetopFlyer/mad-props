@@ -2,7 +2,6 @@ var router = require('express').Router();
 var Auth = require('../classes/Auth');
 var db = require('../db/neo4j');
 
-
 router.get('/auth/impersonate/:identity', function(inReq, inRes){
 
     inReq.Auth.LogOut();
@@ -11,14 +10,15 @@ router.get('/auth/impersonate/:identity', function(inReq, inRes){
 
 });
 
-router.get('/auth/login', function(inReq, inRes){
+router.get('/auth', function(inReq, inRes){
     if(inReq.Auth.LoggedIn){
-        inRes.status(200).json({message:"you are logged in"});
+        inRes.status(200).json({message:"credentials are good"});
     }else{
-        inRes.status(200).json({message:"you are NOT logged in"});
+        inRes.status(500).json({message:"bad signature"});
     }
 });
-router.post('/auth/login', function(inReq, inRes){
+
+router.post('/auth', function(inReq, inRes){
 
     if(inReq.Auth.LoggedIn){
         inRes.status(200).json({authorization:Auth.Forge(inReq.Auth.ID), id:inReq.Auth.ID});
@@ -45,7 +45,10 @@ router.post('/auth/login', function(inReq, inRes){
             inReq.Auth.LogIn(id, signature);
             inRes.status(200).json({
                 authorization:Auth.Forge(id),
-                id:inReq.Auth.ID
+                id:id,
+                name:inData[0][0].data.name,
+                title:inData[0][0].data.title,
+                rank:inData[0][0].data.rank
             });
         }
     }, function(inError){
@@ -55,7 +58,7 @@ router.post('/auth/login', function(inReq, inRes){
     });
 
 });
-router.get('/auth/logout', function(inReq, inRes){
+router.delete('/auth', function(inReq, inRes){
     if(inReq.Auth.LoggedIn){
         inReq.Auth.LogOut();
     }

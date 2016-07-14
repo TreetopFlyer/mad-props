@@ -85,16 +85,15 @@ describe("Authentication", function(){
 
     it("checking auth/login with GET and empty authorization header should confirm a logged out status", function(done){
         chai.request(express)
-        .get('/auth/login')
+        .get('/auth')
         .set('authorization', "")
         .send()
         .then(function(inSuccess){
-            should.exist(inSuccess);
-            inSuccess.body.should.have.property('message');
-            inSuccess.body.message.should.equal("you are NOT logged in");
+            should.not.exist(inSuccess);
             done();
         }, function(inFailure){
-            should.not.exist(inFailure);
+            should.exist(inFailure);
+            done();
         }).catch(function(inError){
             done(inError);
         });
@@ -118,13 +117,13 @@ describe("Authentication", function(){
 
     it("checking auth/login with GET but with the new authorization header should confirm a logged in status", function(done){
         chai.request(express)
-        .get('/auth/login')
+        .get('/auth')
         .set('authorization', authorization)
         .send()
         .then(function(inSuccess){
             should.exist(inSuccess);
             inSuccess.body.should.have.property('message');
-            inSuccess.body.message.should.equal("you are logged in");
+            inSuccess.body.message.should.equal("credentials are good");
             done();
         }, function(inFailure){
             should.not.exist(inFailure);
@@ -269,13 +268,12 @@ describe("Graph Scenario", function(){
         });
     });
 
-    it("the admin should be able to award a winning story and 'close out' the contest", function(done){
+    it("the admin should be able to award a winning story and also 'close out' the contest", function(done){
         chai.request(server)
-        .post('/admin/contest/award')
+        .post('/admin/award')
         .set('authorization', testAuthorizationAdmin)
         .send({
-            idContest:testContestID,
-            idStory:testStoryID
+            id:testStoryID
         })
         .then(function(){
             return chai.request(server)
@@ -395,6 +393,59 @@ describe("Graph Scenario", function(){
         });
     });
 
+    it("the admin can retract his vote on the story", function(done){
+        chai.request(server)
+        .delete('/user/vote')
+        .set('authorization', testAuthorizationAdmin)
+        .send({
+            id:testStoryID
+        })
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("the admin should be able to award the new story", function(done){
+        chai.request(server)
+        .post('/admin/award')
+        .set('authorization', testAuthorizationAdmin)
+        .send({
+            id:testStoryID
+        })
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("the admin should be able to retract the award", function(done){
+        chai.request(server)
+        .delete('/admin/award')
+        .set('authorization', testAuthorizationAdmin)
+        .send({
+            id:testStoryID
+        })
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
 
 
 });

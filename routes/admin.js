@@ -137,10 +137,9 @@ router.delete('/admin/contest', function(inReq, inRes){
     });
 });
 
-router.post('/admin/contest/award', function(inReq, inRes){
-    db.query("match (c:Contest {id:{id}}) optional match (s:Story {id:{idStory}}) merge (c)-[:award]-(s) return s", {
-        id:inReq.body.idContest,
-        idStory:inReq.body.idStory
+router.post('/admin/award', function(inReq, inRes){
+    db.query("match (s:Story {id:{id}}) optional match (c:Contest)<-[:enter]-(s) with c, s merge (c)-[:award]->(s) return s", {
+        id:inReq.body.id
     })
     .then(function(inSuccess){
         inRes.status(200).json(inSuccess[0][0].data);
@@ -148,10 +147,9 @@ router.post('/admin/contest/award', function(inReq, inRes){
         inRes.status(500).json(inFailure);
     });
 });
-router.delete('/admin/contest/award', function(inReq, inRes){
-    db.query("match (c:Contest {id:{id}})-[a:award]->(s:Story {id:{idStory}}) delete a return s", {
-        id:inReq.body.idContest,
-        idStory:inReq.body.idStory
+router.delete('/admin/award', function(inReq, inRes){
+    db.query("match (s:Story {id:{id}}) optional match (c:Contest)<-[:enter]-(s) with c, s optional match (c)-[a:award]->(s) delete a return s", {
+        id:inReq.body.id
     })
     .then(function(inSuccess){
         inRes.status(200).json(inSuccess[0][0].data);

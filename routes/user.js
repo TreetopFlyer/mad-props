@@ -7,7 +7,7 @@ var uuid = require('uuid');
 
 router.use('/user', function(inReq, inRes, inNext){
     if(!inReq.Auth.LoggedIn){
-        inRes.json({exception:'you are not authorized to do this'});
+        inRes.status(500).json({exception:'you are not authorized to do this'});
         return;
     }else{
         inNext();
@@ -53,7 +53,7 @@ router.delete('/user/story', function(inReq, inRes){
 });
 
 router.post('/user/vote', function(inReq, inRes){
-    db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}})-[:enter]->(c:Contest {open:true}) merge (u)-[:vote]->(s) return s", {
+    db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}})-[:enter]->(c:Contest {open:true}) create (u)-[:vote]->(s) return s", {
         id:inReq.Auth.ID,
         idStory:inReq.body.id
     })
@@ -69,7 +69,7 @@ router.post('/user/vote', function(inReq, inRes){
 });
 
 router.delete('/user/vote', function(inReq, inRes){
-    db.query("match (u:User {id:{id}})-[v:vote]->(s:Story {id:{idStory}}) delete v return s", {
+    db.query("match (u:User {id:{id}})-[v:vote]->(s:Story {id:{idStory}}) with v, s limit 1 delete v return s", {
         id:inReq.Auth.ID,
         idStory:inReq.body.id
     })
