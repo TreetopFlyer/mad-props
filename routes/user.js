@@ -14,6 +14,33 @@ router.use('/user', function(inReq, inRes, inNext){
     }
 });
 
+
+router.get('/user/profile', function(inReq, inRes){
+    User
+    .locate({
+        id:inReq.Auth.ID
+    })
+    .then(function(inSuccess){
+        inRes.status(200).json(inSuccess);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+});
+router.put('/user/profile', function(inReq, inRes){
+    User
+    .update({
+        id:inReq.Auth.ID,
+        fields:{
+            password:inReq.body.password
+        }
+    })
+    .then(function(inSuccess){
+        inRes.status(200).json(inSuccess);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+});
+
 router.post('/user/story', function(inReq, inRes){
     Story.create({
         id:uuid.v1(),

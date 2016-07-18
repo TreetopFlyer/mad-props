@@ -67,10 +67,8 @@ router.post('/admin/user', function(inReq, inRes){
             };
             transporter.sendMail(mailOptions, function(error, info){
                 if(error){
-                    console.log("error sending email");
                     inFailureHandler(error);
                 }else{
-                    console.log("email sent");
                     inSuccessHandler(info.response);
                 }
             });
