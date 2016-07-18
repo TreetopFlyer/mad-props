@@ -25,13 +25,13 @@ router.post('/auth', function(inReq, inRes){
         return;
     }
 
-    if(!inReq.body.username || !inReq.body.password){
+    if(!inReq.body.email || !inReq.body.password){
         inRes.status(500).json({message:"credentials not supplied correctly"});
         return;
     }
 
-    db.query("match (u:User {name:{name}, password:{password}}) return u", {
-        name:inReq.body.username,
+    db.query("match (u:User {email:{email}, password:{password}}) return u", {
+        email:inReq.body.email,
         password:inReq.body.password
     })
     .then(function(inData){
@@ -48,6 +48,7 @@ router.post('/auth', function(inReq, inRes){
                 id:id,
                 name:inData[0][0].data.name,
                 title:inData[0][0].data.title,
+                email:inData[0][0].data.email,
                 rank:inData[0][0].data.rank
             });
         }

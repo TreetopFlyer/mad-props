@@ -4,6 +4,8 @@ var db = require('../db/neo4j');
 var User = require('../db/user');
 var Contest = require('../db/contest');
 var uuid = require('uuid');
+var nodemailer = require('nodemailer');
+
 
 router.use('/admin', function(inReq, inRes, inNext){
     if(!inReq.Auth.LoggedIn){
@@ -40,17 +42,46 @@ router.get('/admin/user', function(inReq, inRes){
     });
 });
 router.post('/admin/user', function(inReq, inRes){
+
+    var tempPassword = uuid.v1();
+
     User
     .create({
         id:uuid.v1(),
         name: inReq.body.name,
         title: inReq.body.title,
-        rank:inReq.body.rank
+        email: inReq.body.email,
+        rank: inReq.body.rank,
+        password: tempPassword
+    })
+    .then(function(inSuccess){
+
+        return new Promise(function(inSuccessHandler, inFailureHandler){
+            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
+            var mailOptions = {
+                from: '"seth trowbridge" <seth111@gmail.com>',
+                to: inReq.body.email,
+                subject: 'Welcome to Mad Props', // Subject line
+                text: 'Hello world', // plaintext body
+                html: '<h2>Welcome!</h2><p>To get started, visit your <a href="http://www.nasrecruitment.com.nasbeta.com/mad-props/profile/" target="_blank">account</a> and log in using your email address.</p><p>Your account has been set up with the following temporary password: </p><p>'+tempPassword+'</p>' // html body
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    console.log("error sending email");
+                    inFailureHandler(error);
+                }else{
+                    console.log("email sent");
+                    inSuccessHandler(info.response);
+                }
+            });
+        });
+
     })
     .then(function(inSuccess){
         inRes.status(200).json(inSuccess);
-    }, function(inFailure){
-        inRes.status(500).json(inFailure);
+    })
+    .catch(function(inError){
+        inRes.status(500).json(inError);
     });
 });
 router.put('/admin/user', function(inReq, inRes){
@@ -60,7 +91,8 @@ router.put('/admin/user', function(inReq, inRes){
         fields:{
             name: inReq.body.name,
             title: inReq.body.title,
-            rank:inReq.body.rank
+            rank:inReq.body.rank,
+            email:inReq.body.email
         }
     })
     .then(function(inSuccess){

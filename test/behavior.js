@@ -24,11 +24,14 @@ var testProfileAdmin = {
     id:uuid.v1(),
     name:"Administrator",
     title:"Administrator",
-    rank:"admin"
+    email:"admin@admin.admin",
+    rank:"admin",
+    password:"admin"
 };
 var testProfileUserA = {
     name:"Test User A",
     title:"test user",
+    email:"a@a.a",
     rank:"user"
 };
 var testProfileUserAModified = {
@@ -37,6 +40,7 @@ var testProfileUserAModified = {
 var testProfileUserB = {
     name:"Test User B",
     title:"test user",
+    email:"b@b.b",
     rank:"user"
 };
 
@@ -142,7 +146,10 @@ describe("Graph Scenario", function(){
         express = server.listen(80);
         db.purge()
         .then(function(inSuccess){ return User.create(testProfileAdmin); })
-        .then(function(inSuccess){ done(); });
+        .then(function(inSuccess){ done(); })
+        .catch(function(inError){
+            console.log(inError);
+        });
     });
     after(function(done){
         express.close();
