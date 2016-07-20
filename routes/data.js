@@ -35,8 +35,9 @@ function getEverything(inOpen){
                     "optional match (author:User)-[:wrote]->(story) "+
                     "optional match (about:User)<-[:recognize]-(story) "+
                     "optional match (voter:User)-[:vote]->(story) "+
-                    "optional match (contest2:Contest)-[awards:award]->(story) "+
-                    "with contest, {story:{id:story.id, story:story.story, author:author.id, about:about.id}, votes:collect(voter.id), awards:count(contest2)} as stories "+
+                    "optional match (contest)-[a:award]->(story) "+
+                    "with contest, story, author, about, voter, a IS NOT NULL as award "+
+                    "with contest, {id:story.id, story:story.story, author:author.id, about:about.id, votes:collect(voter.id), awards:award} as stories "+
                     "with {name:contest.name, id:contest.id, stories:collect(stories)} as overview "+
                     "return collect(overview)", {status:inOpen});
         })
