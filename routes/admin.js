@@ -60,7 +60,7 @@ router.post('/admin/user', function(inReq, inRes){
         return new Promise(function(inResolve, inReject){
             var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
             var mailOptions = {
-                from: '"seth trowbridge" <seth111@gmail.com>',
+                from: '"NAS Mad Props" <notify.nas.madprops@gmail.com>',
                 to: inReq.body.email,
                 subject: 'Welcome to Mad Props', // Subject line
                 text: 'Hello world', // plaintext body
