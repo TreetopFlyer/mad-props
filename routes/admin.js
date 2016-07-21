@@ -12,11 +12,11 @@ router.use('/admin', function(inReq, inRes, inNext){
         inRes.status(500).json({exception:'you are not authorized to do this'});
         return;
     }
-
     User
     .locate({id:inReq.Auth.ID})
     .then(function(inSuccess){
         if(inSuccess.rank == "admin"){
+            inReq.Auth.AdminProfile = inSuccess;
             inNext();
         }else{
             inRes.status(500).json({exception:'you are not admin rank'});
@@ -25,6 +25,44 @@ router.use('/admin', function(inReq, inRes, inNext){
         inRes.status(500).json({exception:'you are not authorized to do this'});
     });
 });
+
+
+router.post('/admin/email', function(inReq, inRes){
+
+    db.query("match (u:User) return u.email")
+    .then(function(inSuccess){
+
+        var mailingList = "";
+        var i;
+        for(i=0; i<inSuccess.length; i++){
+            mailingList += ", "+inSuccess[i][0];
+        }
+
+        return new Promise(function(inResolve, inReject){
+            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
+            var mailOptions = {
+                from: process.env.EMAIL_FROM_STRING,
+                to: mailingList,
+                subject: inReq.body.subject,
+                text: inReq.body.message
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    inReject(error);
+                }else{
+                    inResolve();
+                }
+            });
+        });
+    })
+    .then(function(inSuccess){
+        inRes.sendStatus(200);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+
+});
+
 
 router.get('/admin/user', function(inReq, inRes){
     db.query("match (u:User) return u")

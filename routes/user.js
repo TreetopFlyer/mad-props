@@ -45,11 +45,6 @@ router.put('/user/profile', function(inReq, inRes){
 
 
 router.post('/user/story', function(inReq, inRes){
-
-    var createdStory;
-    var profileFrom;
-    var profileTo;
-
     Story.create({
         id:uuid.v1(),
         idAuthor:inReq.Auth.ID,
@@ -58,36 +53,7 @@ router.post('/user/story', function(inReq, inRes){
         story:inReq.body.story
     })
     .then(function(inSuccess){
-        createdStory = inSuccess;
-        return User.locate({id:inReq.Auth.ID});
-    })
-    .then(function(inSuccess){
-        profileFrom = inSuccess;
-        return User.locate({id:inReq.body.idAbout});
-    })
-    .then(function(inSuccess){
-        profileTo = inSuccess;
-
-        return new Promise(function(inResolve, inReject){
-            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
-            var mailOptions = {
-                from: '"NAS Mad Props" <notify.nas.madprops@gmail.com>',
-                to: profileTo.email,
-                subject: 'You have been given mad props!', // Subject line
-                text: profileFrom.name+"("+profileFrom.email+") says: \n\n"+inReq.body.story+" \n\n visit http://nasrecruitment.com.nasbeta.com/mad-props to see more.", // plaintext body
-                html: '' // html body
-            };
-            transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    inReject(error);
-                }else{
-                    inResolve(createdStory);
-                }
-            });
-        });
-    })
-    .then(function(inSuccess){
-        inRes.status(200).json(createdStory);
+        inRes.status(200).json(inSuccess);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
     });
@@ -148,7 +114,41 @@ router.delete('/user/vote', function(inReq, inRes){
 
 
 router.post('/user/email', function(inReq, inRes){
-    
+    var profileFrom;
+    var profileTo;
+
+    User.locate({id:inReq.Auth.ID})
+    .then(function(inSuccess){
+        profileFrom = inSuccess;
+        return User.locate({id:inReq.body.idTo});
+    }, function(inFailure){
+        console.log(inFailure);
+    })
+    .then(function(inSuccess){
+        profileTo = inSuccess;
+        return new Promise(function(inResolve, inReject){
+            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
+            var mailOptions = {
+                from: process.env.EMAIL_FROM_STRING,
+                to: profileTo.email,
+                subject: inReq.body.subject,
+                text: inReq.body.message
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    inReject(error);
+                }else{
+                    inResolve();
+                }
+            });
+        });
+    })
+    .then(function(inSuccess){
+        inRes.sendStatus(200);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
+    });
+
 });
 
 
