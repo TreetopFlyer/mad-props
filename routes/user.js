@@ -41,6 +41,8 @@ router.put('/user/profile', function(inReq, inRes){
     });
 });
 
+
+
 router.post('/user/story', function(inReq, inRes){
     Story.create({
         id:uuid.v1(),
@@ -79,6 +81,8 @@ router.delete('/user/story', function(inReq, inRes){
     });
 });
 
+
+
 router.post('/user/vote', function(inReq, inRes){
     db.query("match (u:User {id:{id}}) optional match (s:Story {id:{idStory}})-[:enter]->(c:Contest {open:true}) create (u)-[:vote]->(s) return s", {
         id:inReq.Auth.ID,
@@ -94,7 +98,6 @@ router.post('/user/vote', function(inReq, inRes){
         inRes.status(500).json({exception:"either story doesnt exist or the contest is invalid,"});
     })
 });
-
 router.delete('/user/vote', function(inReq, inRes){
     db.query("match (u:User {id:{id}})-[v:vote]->(s:Story {id:{idStory}}) with v, s limit 1 delete v return s", {
         id:inReq.Auth.ID,
@@ -106,5 +109,13 @@ router.delete('/user/vote', function(inReq, inRes){
         inRes.status(500).json(inFailure);
     });
 });
+
+
+
+router.post('/user/email', function(inReq, inRes){
+    
+});
+
+
 
 module.exports = router;
