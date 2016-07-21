@@ -42,9 +42,9 @@ router.post('/admin/email', function(inReq, inRes){
             var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
             var mailOptions = {
                 from: process.env.EMAIL_FROM_STRING,
-                to: mailingList,
+                to: mailingList.substring(2),
                 subject: inReq.body.subject,
-                text: inReq.body.message
+                message: inReq.body.message
             };
             transporter.sendMail(mailOptions, function(error, info){
                 if(error){
@@ -71,7 +71,7 @@ router.get('/admin/user', function(inReq, inRes){
         var user;
         var i;
         for(i=0; i<inSuccess.length; i++){
-            user = inSuccess[i][0].data
+            user = inSuccess[i][0].data;
             model.push(user);
         }
         inRes.status(200).json(model);
@@ -80,9 +80,6 @@ router.get('/admin/user', function(inReq, inRes){
     });
 });
 router.post('/admin/user', function(inReq, inRes){
-
-    var tempPassword = uuid.v1();
-
     User
     .create({
         id:uuid.v1(),
@@ -90,29 +87,7 @@ router.post('/admin/user', function(inReq, inRes){
         title: inReq.body.title,
         email: inReq.body.email,
         rank: inReq.body.rank,
-        password: tempPassword
-    })
-
-    .then(function(inSuccess){
-
-        return new Promise(function(inResolve, inReject){
-            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
-            var mailOptions = {
-                from: '"NAS Mad Props" <notify.nas.madprops@gmail.com>',
-                to: inReq.body.email,
-                subject: 'Welcome to Mad Props', // Subject line
-                text: 'Hello world', // plaintext body
-                html: '<h2>Welcome!</h2><p>To get started, visit your <a href="http://www.nasrecruitment.com.nasbeta.com/mad-props/profile/" target="_blank">account</a> and log in using your email address.</p><p>Your account has been set up with the following temporary password: </p><p>'+tempPassword+'</p>' // html body
-            };
-            transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    inReject(error);
-                }else{
-                    inResolve(inSuccess);
-                }
-            });
-        });
-
+        password: uuid.v1()
     })
     .then(function(inSuccess){
         inRes.status(200).json(inSuccess);

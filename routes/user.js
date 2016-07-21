@@ -120,9 +120,7 @@ router.post('/user/email', function(inReq, inRes){
     User.locate({id:inReq.Auth.ID})
     .then(function(inSuccess){
         profileFrom = inSuccess;
-        return User.locate({id:inReq.body.idTo});
-    }, function(inFailure){
-        console.log(inFailure);
+        return User.locate({id:inReq.body.id});
     })
     .then(function(inSuccess){
         profileTo = inSuccess;
