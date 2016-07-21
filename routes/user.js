@@ -4,6 +4,7 @@ var User = require('../db/user');
 var Contest = require('../db/contest');
 var Story = require('../db/story');
 var uuid = require('uuid');
+var nodemailer = require('nodemailer');
 
 router.use('/user', function(inReq, inRes, inNext){
     if(!inReq.Auth.LoggedIn){
@@ -42,6 +43,11 @@ router.put('/user/profile', function(inReq, inRes){
 });
 
 router.post('/user/story', function(inReq, inRes){
+
+    var createdStory;
+    var profileFrom;
+    var profileTo;
+
     Story.create({
         id:uuid.v1(),
         idAuthor:inReq.Auth.ID,
@@ -50,7 +56,36 @@ router.post('/user/story', function(inReq, inRes){
         story:inReq.body.story
     })
     .then(function(inSuccess){
-        inRes.status(200).json(inSuccess);
+        createdStory = inSuccess;
+        return User.locate({id:inReq.Auth.ID});
+    })
+    .then(function(inSuccess){
+        profileFrom = inSuccess;
+        return User.locate({id:inReq.body.idAbout});
+    })
+    .then(function(inSuccess){
+        profileTo = inSuccess;
+
+        return new Promise(function(inResolve, inReject){
+            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
+            var mailOptions = {
+                from: '"NAS Mad Props" <notify.nas.madprops@gmail.com>',
+                to: profileTo.email,
+                subject: 'You have been given mad props!', // Subject line
+                text: profileFrom.name+"("+profileFrom.email+") says: \n\n"+inReq.body.story+" \n\n visit http://nasrecruitment.com.nasbeta.com/mad-props to see more.", // plaintext body
+                html: '' // html body
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    inReject(error);
+                }else{
+                    inResolve(createdStory);
+                }
+            });
+        });
+    })
+    .then(function(inSuccess){
+        inRes.status(200).json(createdStory);
     }, function(inFailure){
         inRes.status(500).json(inFailure);
     });
