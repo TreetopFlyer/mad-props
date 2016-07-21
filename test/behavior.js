@@ -1,8 +1,4 @@
 require('dotenv').config();
-process.env.DB_USERNAME = process.env.DB_TEST_USERNAME;
-process.env.DB_PASSWORD = process.env.DB_TEST_PASSWORD;
-process.env.DB_URL = process.env.DB_TEST_URL;
-
 
 var uuid = require('uuid');
 var chai = require('chai');

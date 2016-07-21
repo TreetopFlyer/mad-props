@@ -54,12 +54,13 @@ router.post('/admin/user', function(inReq, inRes){
         rank: inReq.body.rank,
         password: tempPassword
     })
+
     .then(function(inSuccess){
 
-        return new Promise(function(inSuccessHandler, inFailureHandler){
+        return new Promise(function(inResolve, inReject){
             var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
             var mailOptions = {
-                from: '"seth trowbridge" <seth111@gmail.com>',
+                from: '"NAS Mad Props" <notify.nas.madprops@gmail.com>',
                 to: inReq.body.email,
                 subject: 'Welcome to Mad Props', // Subject line
                 text: 'Hello world', // plaintext body
@@ -67,9 +68,9 @@ router.post('/admin/user', function(inReq, inRes){
             };
             transporter.sendMail(mailOptions, function(error, info){
                 if(error){
-                    inFailureHandler(error);
+                    inReject(error);
                 }else{
-                    inSuccessHandler(info.response);
+                    inResolve(inSuccess);
                 }
             });
         });
@@ -77,6 +78,8 @@ router.post('/admin/user', function(inReq, inRes){
     })
     .then(function(inSuccess){
         inRes.status(200).json(inSuccess);
+    }, function(inFailure){
+        inRes.status(500).json(inFailure);
     })
     .catch(function(inError){
         inRes.status(500).json(inError);

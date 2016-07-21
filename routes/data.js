@@ -21,47 +21,28 @@ function getEverything(inOpen){
         var users;
         var user;
 
-        db.query("match (u:User) return u")
+        db.query("match (u:User) return {name:u.name, title:u.title, id:u.id}")
         .then(function(inSuccess){
 
             users = [];
             for(i=0; i<inSuccess.length; i++){
-                user = inSuccess[i][0].data;
-                users.push({
-                    name:user.name,
-                    title:user.title,
-                    id:user.id
-                });
+                users.push(inSuccess[i][0]);
             }
 
             return db
-            .query("match (c:Contest {open:{status}}) optional match (c)<-[:enter]-(s:Story) optional match (author:User)-[:wrote]->(s)-[:recognize]->(about:User) optional match (voter:User)-[v:vote]->(s) optional match (c)-[a:award]->(s) with c, count(a) as awards, author, s, about, collect(voter) as tally return c, collect(author), collect(s), collect(about), collect(tally), collect(awards)", {status:inOpen});
+            .query("match (contest:Contest {open:{status}}) "+
+                    "optional match (contest)<-[:enter]-(story:Story) "+
+                    "optional match (author:User)-[:wrote]->(story) "+
+                    "optional match (about:User)<-[:recognize]-(story) "+
+                    "optional match (voter:User)-[:vote]->(story) "+
+                    "optional match (contest)-[a:award]->(story) "+
+                    "with contest, story, author, about, voter, a IS NOT NULL as award "+
+                    "with contest, {id:story.id, story:story.story, author:author.id, about:about.id, votes:collect(voter.id), awards:award} as stories "+
+                    "with {name:contest.name, id:contest.id, stories:collect(stories)} as overview "+
+                    "return collect(overview)", {status:inOpen});
         })
         .then(function(inSuccess){
-            for(i=0; i<inSuccess.length; i++){
-                contest = {
-                    contest:inSuccess[i][0].data,
-                    stories:[]
-                };
-                for(j=0; j<inSuccess[i][1].length; j++){
-
-                    var tally = [];
-                    for(k=0; k<inSuccess[i][4][j].length; k++){
-                        tally.push(inSuccess[i][4][j][k].data.id);
-                    }
-
-                    contest.stories.push({
-                        author:inSuccess[i][1][j].data.id,
-                        story:inSuccess[i][2][j].data,
-                        about:inSuccess[i][3][j].data.id,
-                        votes:tally,
-                        awards:inSuccess[i][5][j]
-                    });
-                }
-                model.push(contest);
-            }
-
-            inResolve({contests:model, users:users});
+            inResolve({contests:inSuccess[0][0], users:users});
         }, function(inFailure){
             inReject(inFailure);
         });
