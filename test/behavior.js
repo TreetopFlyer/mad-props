@@ -72,10 +72,12 @@ function checkObject(inObject, inTestObject){
 
 describe("Authentication", function(){
 
+    var port;
     var express;
     var authorization;
     before(function(done){
-        express = server.listen(80);
+        port = process.env.PORT || 3000
+        express = server.listen(process.env.PORT || port);
         done();
     });
     after(function(done){
@@ -137,9 +139,11 @@ describe("Authentication", function(){
 describe("Graph Scenario", function(){
 
     var express;
+    var port;
     before(function(done){
+        port = process.env.PORT || 3000;
         console.log("----------------------------------");
-        express = server.listen(80);
+        express = server.listen(port);
         db.purge()
         .then(function(inSuccess){ return User.create(testProfileAdmin); })
         .then(function(inSuccess){ done(); })

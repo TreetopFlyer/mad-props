@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/TreetopFlyer/mad-props.svg?branch=master)](https://travis-ci.org/TreetopFlyer/mad-props)
