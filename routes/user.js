@@ -130,7 +130,8 @@ router.post('/user/email', function(inReq, inRes){
                 from: process.env.EMAIL_FROM_STRING,
                 to: profileTo.email,
                 subject: inReq.body.subject,
-                text: inReq.body.message
+                text:'',
+                html: inReq.body.message
             };
             transporter.sendMail(mailOptions, function(error, info){
                 if(error){

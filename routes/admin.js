@@ -44,7 +44,8 @@ router.post('/admin/email', function(inReq, inRes){
                 from: process.env.EMAIL_FROM_STRING,
                 to: mailingList.substring(2),
                 subject: inReq.body.subject,
-                message: inReq.body.message
+                text:'',
+                html: inReq.body.message
             };
             transporter.sendMail(mailOptions, function(error, info){
                 if(error){
