@@ -1,7 +1,7 @@
-var server = require('./server.js');
 var fs = require('fs');
 var https = require('https');
 var http = require('http');
+var server = require('./server.js');
 
 var port = process.env.PORT || 80;
 
