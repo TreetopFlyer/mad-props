@@ -156,7 +156,7 @@ router.post('/user/email', function(inReq, inRes){
     .then(function(inSuccess){
         inRes.sendStatus(200);
     }, function(inFailure){
-        inRes.status(500).json(inFailure);
+        inRes.status(500).json({message:"error sending email", mailer_error:inFailure});
     });
 
 });
