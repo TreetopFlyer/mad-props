@@ -412,7 +412,7 @@ describe("Authentication and Email", function(){
     });
 
     it("checking auth/login with GET and a bad/empty authorization header should return a 500", function(done){
-        chai.request(express)
+        chai.request(server)
         .get('/auth')
         .set('authorization', 'q2r0yq2r0hfai')
         .send()
@@ -430,7 +430,7 @@ describe("Authentication and Email", function(){
     //testProfileAdmin.email, testProfileAdmin.password
 
     it("posting the Admin's credentials to /auth should return the admin's authorization and profile", function(done){
-        chai.request(express)
+        chai.request(server)
         .post('/auth')
         .send(testProfileAdmin)
         .then(function(inSuccess){
@@ -445,7 +445,7 @@ describe("Authentication and Email", function(){
     });
 
     it("checking auth/login with GET and the admin's authorization header should return a 200", function(done){
-        chai.request(express)
+        chai.request(server)
         .get('/auth')
         .set('authorization', profile.authorization)
         .send()
@@ -464,7 +464,7 @@ describe("Authentication and Email", function(){
 
         this.timeout(3000);
 
-        chai.request(express)
+        chai.request(server)
         .post('/user/email')
         .set('authorization', profile.authorization)
         .send({id:testProfileUserAID, subject:"test subject", message:"mocha testing."})
@@ -484,7 +484,7 @@ describe("Authentication and Email", function(){
 
         this.timeout(3000);
 
-        chai.request(express)
+        chai.request(server)
         .post('/user/email')
         .set('authorization', profile.authorization)
         .send({id:123412408612471, subject:"test subject", message:"mocha testing."})
@@ -503,7 +503,7 @@ describe("Authentication and Email", function(){
         
         this.timeout(3000);
 
-        chai.request(express)
+        chai.request(server)
         .post('/admin/email')
         .set('authorization', profile.authorization)
         .send({subject:"test subject", message:"mocha testing."})
@@ -522,7 +522,7 @@ describe("Authentication and Email", function(){
         
         this.timeout(3000);
 
-        chai.request(express)
+        chai.request(server)
         .post('/admin/email')
         .set('authorization', "q10497qi2ruhgawf908125")
         .send({subject:"test subject", message:"mocha testing."})
