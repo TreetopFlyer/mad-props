@@ -2,5 +2,12 @@ language: node_js
 node_js:
 - '0.12'
 branches:
-    only:
-        - master
+  only:
+  - master
+deploy:
+  provider: heroku
+  api_key:
+    secure: d4IY5YN5w9NAnsQodfXL8kBaW0fJsNMZ3gvqmjt8TnNapnz/OmGT+M+PSBzafLTofvTQeVQyUkN7+kccB3UV0Fpkz2EWjMtk5sgdDzTMuTJg1SMBdHYtxnDVR0VdBFH4Z28rACRSy4brcLGrUSUc560KuQmD8+CSUYiPzCLASfE0W+ARpRerE26ud81vwZL1uWUlJ6rjEdjhtwT29gVg/B8tIN2BvUuP0dZHo+2HfzFh55PDm461jMkbQqUzMN4FJdRLgk9ZwIjHxNDgyAN9BWP7JVdlPZHDkPZzbLqycFcHN7cWdiqR9wivBbUJlkMf9DRKsC+hwBIIpl7kL1kDU1nfCwLfBBSzDWqZVkTRn1EHItiIkjyOKN/viHULQgDI4LSH6gfc7Vweg6tFRLBXzdGohCQLZycehzXcyawzz3zJ2bhhU5m8kPM+wpiL9PpDNUOsKC7w6X4A/CM08PhdxUcHsSattXpL9SQbObfwLa4HbbCwZv3P+4lWcrmeT77x4pfkUu2FP8vdWFJZZ3NEjMqE9wOm4RbPnbi/31DTc9qlMFkJOoZ7XhF+rXvHfq9tRgOiG12AhtKSOcLWeiMmpVPvd/nDnyKGzwAsri8mQnQnu/GAP8r2QS0G2tyTv0T/hWC0FTZ1KcgZUKnVY8aMQgmC0y3/rVl3xWTKhtHafaU=
+  app: mad-props-testing
+  on:
+    repo: TreetopFlyer/mad-props

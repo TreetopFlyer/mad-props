@@ -136,7 +136,7 @@ router.post('/user/email', function(inReq, inRes){
                 tls: {ciphers:'SSLv3'}
             };
             var mailOptions = {
-                from: "<"+process.env.EMAIL_USER+">",
+                from: "<"+process.env.EMAIL_USERNAME+">",
                 to: profileTo.email,
                 subject: inReq.body.subject + " (from "+profileFrom.name+")",
                 text:'',

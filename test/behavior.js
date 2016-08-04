@@ -394,7 +394,7 @@ describe("Graph Scenario", function(){
 });
 
 
-describe("Authentication", function(){
+describe("Authentication and Email", function(){
 
     var port;
     var express;
@@ -436,6 +436,7 @@ describe("Authentication", function(){
         .then(function(inSuccess){
             should.exist(inSuccess);
             profile = inSuccess.body;
+            profile.should.have.property('authorization');
             done();
         }, function(inFailure){
             should.not.exist(inFailure);
@@ -453,6 +454,83 @@ describe("Authentication", function(){
             done();
         }, function(inFailure){
             should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("posting an id, subject, and message to user/email with should send an email to a single user", function(done){
+
+        this.timeout(3000);
+
+        chai.request(express)
+        .post('/user/email')
+        .set('authorization', profile.authorization)
+        .send({id:testProfileUserAID, subject:"test subject", message:"mocha testing."})
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("posting a bad id to user/email should fail", function(done){
+
+        this.timeout(3000);
+
+        chai.request(express)
+        .post('/user/email')
+        .set('authorization', profile.authorization)
+        .send({id:123412408612471, subject:"test subject", message:"mocha testing."})
+        .then(function(inSuccess){
+            should.not.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("posting a subject and message to admin/email with admin credentials should send an email to everyone", function(done){
+        
+        this.timeout(3000);
+
+        chai.request(express)
+        .post('/admin/email')
+        .set('authorization', profile.authorization)
+        .send({subject:"test subject", message:"mocha testing."})
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    it("posting a subject and message to admin/email with bad credentials should fail", function(done){
+        
+        this.timeout(3000);
+
+        chai.request(express)
+        .post('/admin/email')
+        .set('authorization', "q10497qi2ruhgawf908125")
+        .send({subject:"test subject", message:"mocha testing."})
+        .then(function(inSuccess){
+            should.not.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.exist(inFailure);
+            done();
         }).catch(function(inError){
             done(inError);
         });
