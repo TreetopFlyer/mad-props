@@ -4,7 +4,7 @@ var User = require('../db/user');
 var Contest = require('../db/contest');
 var Story = require('../db/story');
 var uuid = require('uuid');
-var nodemailer = require('nodemailer');
+var Email = require('../classes/Email');
 
 router.use('/user', function(inReq, inRes, inNext){
     if(!inReq.Auth.LoggedIn){
@@ -14,7 +14,6 @@ router.use('/user', function(inReq, inRes, inNext){
         inNext();
     }
 });
-
 
 router.get('/user/profile', function(inReq, inRes){
     User
@@ -124,39 +123,12 @@ router.post('/user/email', function(inReq, inRes){
     })
     .then(function(inSuccess){
         profileTo = inSuccess;
-        return new Promise(function(inResolve, inReject){
-            var serverOptions = {
-                secureConnection: false,
-                port: 587,
-                host: process.env.EMAIL_HOST,
-                auth: {
-                    user: process.env.EMAIL_USERNAME,
-                    pass: process.env.EMAIL_PASSWORD
-                },
-                tls: {ciphers:'SSLv3'}
-            };
-            var mailOptions = {
-                from: "<"+process.env.EMAIL_USERNAME+">",
-                to: profileTo.email,
-                subject: inReq.body.subject + " (from "+profileFrom.name+")",
-                text:'',
-                html: inReq.body.message
-            };
-            nodemailer
-            .createTransport(serverOptions)
-            .sendMail(mailOptions, function(error, info){
-                if(error){
-                    inReject(error);
-                }else{
-                    inResolve();
-                }
-            });
-        });
+        return Email.Send(profileFrom.name, profileTo.email, inReq.body.subject, inReq.body.message);
     })
     .then(function(inSuccess){
         inRes.sendStatus(200);
     }, function(inFailure){
-        inRes.status(500).json({message:"error sending email", mailer_error:inFailure});
+        inRes.status(500).json({message:"error sending email", config:Email.Config, mailer_error:inFailure});
     });
 
 });

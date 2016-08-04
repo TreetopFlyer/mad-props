@@ -4,7 +4,7 @@ var db = require('../db/neo4j');
 var User = require('../db/user');
 var Contest = require('../db/contest');
 var uuid = require('uuid');
-var nodemailer = require('nodemailer');
+var Email = require('../classes/Email');
 
 
 router.use('/admin', function(inReq, inRes, inNext){
@@ -37,36 +37,7 @@ router.post('/admin/email', function(inReq, inRes){
         for(i=0; i<inSuccess.length; i++){
             mailingList += ", "+inSuccess[i][0];
         }
-
-        return new Promise(function(inResolve, inReject){
-            var serverOptions = {
-                secureConnection: false,
-                port: 587,
-                host: process.env.EMAIL_HOST,
-                auth: {
-                    user: process.env.EMAIL_USERNAME,
-                    pass: process.env.EMAIL_PASSWORD
-                },
-                tls: {ciphers:'SSLv3'}
-            };
-            var mailOptions = {
-                from: "<"+process.env.EMAIL_USERNAME+">",
-                to: mailingList.substring(2),
-                subject: inReq.body.subject + " (from "+inReq.Auth.AdminProfile.name+")",
-                text:'',
-                html: inReq.body.message
-            };
-            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
-            nodemailer
-            .createTransport(serverOptions)
-            .sendMail(mailOptions, function(error, info){
-                if(error){
-                    inReject(error);
-                }else{
-                    inResolve();
-                }
-            });
-        });
+        return Email.Send(inReq.Auth.AdminProfile.name, mailingList.substring(2), inReq.body.subject, inReq.body.message);
     })
     .then(function(inSuccess){
         inRes.sendStatus(200);

@@ -427,7 +427,6 @@ describe("Authentication and Email", function(){
         });
     });
 
-    //testProfileAdmin.email, testProfileAdmin.password
 
     it("posting the Admin's credentials to /auth should return the admin's authorization and profile", function(done){
         chai.request(server)
@@ -472,8 +471,8 @@ describe("Authentication and Email", function(){
             should.exist(inSuccess);
             done();
         }, function(inFailure){
-            console.log("failure trace", inFailure);
-            should.not.exist(inFailure);
+            console.log("failure trace", inFailure.body);
+            should.not.exist(inFailure.body);
             done();
         }).catch(function(inError){
             done(inError);
