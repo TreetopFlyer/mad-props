@@ -471,8 +471,8 @@ describe("Authentication and Email", function(){
             should.exist(inSuccess);
             done();
         }, function(inFailure){
-            console.log("failure trace", inFailure.body);
-            should.not.exist(inFailure.body);
+            console.log("failure trace", inFailure);
+            should.not.exist(inFailure);
             done();
         }).catch(function(inError){
             done(inError);
