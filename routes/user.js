@@ -125,15 +125,26 @@ router.post('/user/email', function(inReq, inRes){
     .then(function(inSuccess){
         profileTo = inSuccess;
         return new Promise(function(inResolve, inReject){
-            var transporter = nodemailer.createTransport(process.env.EMAIL_TRANSPORT_STRING);
+            var serverOptions = {
+                secureConnection: false,
+                port: 587,
+                host: process.env.EMAIL_HOST,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+                tls: {ciphers:'SSLv3'}
+            };
             var mailOptions = {
-                from: process.env.EMAIL_FROM_STRING,
+                from: "<"+process.env.EMAIL_USER+">",
                 to: profileTo.email,
-                subject: inReq.body.subject,
+                subject: inReq.body.subject + " (from "+profileFrom.name+")",
                 text:'',
                 html: inReq.body.message
             };
-            transporter.sendMail(mailOptions, function(error, info){
+            nodemailer
+            .createTransport(serverOptions)
+            .sendMail(mailOptions, function(error, info){
                 if(error){
                     inReject(error);
                 }else{

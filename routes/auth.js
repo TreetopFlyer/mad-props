@@ -2,14 +2,6 @@ var router = require('express').Router();
 var Auth = require('../classes/Auth');
 var db = require('../db/neo4j');
 
-router.get('/auth/impersonate/:identity', function(inReq, inRes){
-
-    inReq.Auth.LogOut();
-    inReq.Auth.LogIn(inReq.params.identity, Auth.Sign(inReq.params.identity));
-    inRes.status(200).json({authorization:Auth.Forge(inReq.params.identity), id:inReq.params.identity});
-
-});
-
 router.get('/auth', function(inReq, inRes){
     if(inReq.Auth.LoggedIn){
         inRes.status(200).json({message:"credentials are good"});
