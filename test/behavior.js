@@ -70,71 +70,7 @@ function checkObject(inObject, inTestObject){
     }
 };
 
-describe("Authentication", function(){
 
-    var port;
-    var express;
-    var authorization;
-    before(function(done){
-        port = process.env.PORT || 3000
-        express = server.listen(process.env.PORT || port);
-        done();
-    });
-    after(function(done){
-        express.close();
-        done();
-    });
-
-    it("checking auth/login with GET and empty authorization header should confirm a logged out status", function(done){
-        chai.request(express)
-        .get('/auth')
-        .set('authorization', "")
-        .send()
-        .then(function(inSuccess){
-            should.not.exist(inSuccess);
-            done();
-        }, function(inFailure){
-            should.exist(inFailure);
-            done();
-        }).catch(function(inError){
-            done(inError);
-        });
-    });
-
-    it("forging a profile with /auth/impersonate should return a set of credentials", function(done){
-        chai.request(express)
-        .get('/auth/impersonate/some-admin-id')
-        .send()
-        .then(function(inSuccess){
-            should.exist(inSuccess);
-            inSuccess.body.should.have.property('authorization');
-            authorization = inSuccess.body.authorization;
-            done();
-        }, function(inFailure){
-            should.not.exist(inFailure);
-        }).catch(function(inError){
-            done(inError);
-        });
-    });
-
-    it("checking auth/login with GET but with the new authorization header should confirm a logged in status", function(done){
-        chai.request(express)
-        .get('/auth')
-        .set('authorization', authorization)
-        .send()
-        .then(function(inSuccess){
-            should.exist(inSuccess);
-            inSuccess.body.should.have.property('message');
-            inSuccess.body.message.should.equal("credentials are good");
-            done();
-        }, function(inFailure){
-            should.not.exist(inFailure);
-        }).catch(function(inError){
-            done(inError);
-        });
-    });
-
-})
 
 describe("Graph Scenario", function(){
 
@@ -456,3 +392,70 @@ describe("Graph Scenario", function(){
 
 
 });
+
+
+describe("Authentication", function(){
+
+    var port;
+    var express;
+    var authorization;
+    var profile;
+
+    before(function(done){
+        port = process.env.PORT || 3000
+        express = server.listen(process.env.PORT || port);
+        done();
+    });
+    after(function(done){
+        express.close();
+        done();
+    });
+
+    it("checking auth/login with GET and a bad/empty authorization header should return a 500", function(done){
+        chai.request(express)
+        .get('/auth')
+        .set('authorization', 'q2r0yq2r0hfai')
+        .send()
+        .then(function(inSuccess){
+            should.not.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.exist(inFailure);
+            done();
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+    //testProfileAdmin.email, testProfileAdmin.password
+
+    it("posting the Admin's credentials to /auth should return the admin's authorization and profile", function(done){
+        chai.request(express)
+        .post('/auth')
+        .send(testProfileAdmin)
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            profile = inSuccess.body;
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+            done();
+        });
+    });
+
+    it("checking auth/login with GET and the admin's authorization header should return a 200", function(done){
+        chai.request(express)
+        .get('/auth')
+        .set('authorization', profile.authorization)
+        .send()
+        .then(function(inSuccess){
+            should.exist(inSuccess);
+            done();
+        }, function(inFailure){
+            should.not.exist(inFailure);
+        }).catch(function(inError){
+            done(inError);
+        });
+    });
+
+})
